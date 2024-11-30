@@ -24,7 +24,7 @@ export class OrganisationsController {
   @HttpCode(HttpStatus.CREATED)
   async addClient(@Body() clientRecord: ClientRegistrationDTO): Promise<void> {
     try {
-      if (!(await this.clientsService.validateClient(clientRecord.clientId))) {
+      if (!(await this.clientsService.clientExists(clientRecord.clientId))) {
         throw new HttpException(
           'Client does not exist',
           HttpStatus.BAD_REQUEST,
