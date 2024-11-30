@@ -16,9 +16,18 @@ export class ClientsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createClient(@Body() createClientDTO: ClientDTO) {
+  async createClient(@Body() createClientDTO: ClientDTO): Promise<string> {
     try {
-      await this.clientsService.create(createClientDTO);
+      if (!(await this.clientsService.canRegister(createClientDTO))) {
+        throw new HttpException(
+          'Client with this email already exists',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const clientId = await this.clientsService.create(createClientDTO);
+
+      return JSON.stringify({ clientId });
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -28,6 +37,7 @@ export class ClientsController {
   async getAllClients(): Promise<string> {
     try {
       const clients = await this.clientsService.findAll();
+
       return JSON.stringify(clients);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
