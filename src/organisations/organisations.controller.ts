@@ -5,13 +5,15 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
-  Param,
+  ParseUUIDPipe,
   Post,
+  Query,
 } from '@nestjs/common';
-import { ClientRegistrationDTO } from 'src/models/organisationModels';
 import { OrganisationsService } from './organisations.service';
 import { ClientsService } from 'src/clients/clients.service';
 import { UUID } from 'crypto';
+import { OrganisationDTO } from './organisation/organisation.dto';
+import { Organisation } from './organisation/organisation.schema';
 
 @Controller('organisations')
 export class OrganisationsController {
@@ -20,34 +22,33 @@ export class OrganisationsController {
     private readonly clientsService: ClientsService,
   ) {}
 
-  @Post('clients')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
-  async addClient(@Body() clientRecord: ClientRegistrationDTO): Promise<void> {
+  async createOrganisation(
+    @Body() organisationDTO: OrganisationDTO,
+  ): Promise<void> {
     try {
-      if (!(await this.clientsService.clientExists(clientRecord.clientId))) {
-        throw new HttpException(
-          'Client does not exist',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      this.organisationsService.addClient(
-        clientRecord.clientId,
-        clientRecord.organisationId,
-      );
+      const organisation = new Organisation(organisationDTO);
+      await this.organisationsService.createOrganisation(organisation);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  @Get('clients')
-  async getClients(
-    @Param('organisationId') organisationId: UUID,
-  ): Promise<string> {
+  @Post('clients')
+  @HttpCode(HttpStatus.CREATED)
+  async addClient(
+    @Query('clientId', ParseUUIDPipe) clientId: UUID,
+    @Query('organisationId', ParseUUIDPipe) organisationId: UUID,
+  ): Promise<void> {
     try {
-      const clients =
-        await this.organisationsService.getClients(organisationId);
-      return JSON.stringify(clients);
+      if (!(await this.clientsService.clientExists(clientId))) {
+        throw new HttpException(
+          'Client does not exist',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      await this.organisationsService.addClient(clientId, organisationId);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
