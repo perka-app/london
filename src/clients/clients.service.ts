@@ -1,34 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID, UUID } from 'crypto';
-import { Client, ClientDTO } from 'src/models/clientModels';
+import { ClientDTO } from './client/client.dto';
+import { Client } from './client/client.entity';
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ClientsService {
-  private clients: Client[] = [];
+  constructor(
+    @InjectRepository(Client)
+    private clientsRepository: Repository<Client>,
+  ) {}
 
-  async create(client: ClientDTO): Promise<UUID> {
-    const newClient: Client = {
-      client_id: randomUUID(),
-      ...client,
-    };
+  async create(clientDTO: ClientDTO): Promise<UUID> {
+    const newClient = new Client(clientDTO);
 
-    this.clients.push(newClient);
-    return newClient.client_id;
-  }
+    await this.clientsRepository.save(newClient);
 
-  async findAll(): Promise<Client[]> {
-    return this.clients;
+    return newClient.clientId;
   }
 
   async getClientCount(): Promise<number> {
-    return this.clients.length;
+    return this.clientsRepository.count();
   }
 
   async clientExists(clientId: UUID): Promise<boolean> {
-    return this.clients.some((client) => client.client_id === clientId);
+    const where: FindOptionsWhere<Client> = { clientId: clientId };
+    return this.clientsRepository.existsBy(where);
   }
 
   async canRegister(clientDTO: ClientDTO): Promise<boolean> {
-    return !this.clients.some((client) => client.email === clientDTO.email);
+    const where: FindOptionsWhere<Client> = { email: clientDTO.email };
+    return !(await this.clientsRepository.existsBy(where));
   }
 }

@@ -7,8 +7,8 @@ import {
   HttpStatus,
   Post,
 } from '@nestjs/common';
-import { ClientDTO } from 'src/models/clientModels';
 import { ClientsService } from './clients.service';
+import { ClientDTO } from './client/client.dto';
 
 @Controller('clients')
 export class ClientsController {
@@ -33,10 +33,10 @@ export class ClientsController {
     }
   }
 
-  @Get()
-  async getAllClients(): Promise<string> {
+  @Get('count')
+  async getClientsCount(): Promise<string> {
     try {
-      const clients = await this.clientsService.findAll();
+      const clients = await this.clientsService.getClientCount();
 
       return JSON.stringify(clients);
     } catch (err) {
