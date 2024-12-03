@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -13,7 +12,7 @@ import { OrganisationsService } from './organisations.service';
 import { ClientsService } from 'src/clients/clients.service';
 import { UUID } from 'crypto';
 import { OrganisationDTO } from './organisation/organisation.dto';
-import { Organisation } from './organisation/organisation.schema';
+import { Organisation } from './organisation/organisation.entity';
 
 @Controller('organisations')
 export class OrganisationsController {

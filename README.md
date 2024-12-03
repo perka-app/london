@@ -72,9 +72,11 @@ Check out a few resources that may come in handy when working with NestJS:
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
 ## Local setup
+
 To run this service locally you need:
 
 1. ENV properties:
+
 ```env
 ENVIRONMENT=dev/prod
 
@@ -82,16 +84,11 @@ DATABASE_HOST=localhost
 DATABASE_PORT=5432
 DATABASE_USERNAME=root
 DATABASE_PASSWORD=password
-DATABASE_NAME=clients_db
-
-MONGODB_URI=mongodb://localhost:27017/organisations-db
+DATABASE_NAME=postgres_db
 ```
 
 2. PostgresDB instance:
-```sh
-docker run --name clients_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e POSTGRES_DB=clients_db -p 5432:5432 -d postgres:latest
-```
 
-3. MongoDB instance:
 ```sh
-docker run --name organisations-db -d -p 27017:27017 mongo:latest
+docker run --name postgres_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres_db -p 5432:5432 -d postgres:latest
+```

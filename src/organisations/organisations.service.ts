@@ -1,29 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { randomUUID, UUID } from 'crypto';
-import { Model } from 'mongoose';
-import { Organisation } from './organisation/organisation.schema';
-import { ClientRecord } from './organisation/clientRecord.schema';
+import { UUID } from 'crypto';
+import { Organisation } from './organisation/organisation.entity';
+import { ClientRecord } from './organisation/clientRecord.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class OrganisationsService {
   constructor(
-    @InjectModel(Organisation.name) private organisation: Model<Organisation>,
-    @InjectModel(ClientRecord.name) private clientRecord: Model<ClientRecord>,
+    @InjectRepository(Organisation)
+    private organisationsRepository: Repository<Organisation>,
+    @InjectRepository(ClientRecord)
+    private clientRecordsRepository: Repository<ClientRecord>,
   ) {}
 
-  async createOrganisation(organisation: Organisation): Promise<void> {
-    const organisationRecord = new this.organisation(organisation);
-    await organisationRecord.save();
+  async createOrganisation(organisation: Organisation): Promise<string> {
+    await this.organisationsRepository.save(organisation);
+    return organisation.organisationId;
   }
 
   async addClient(clientId: UUID, organisationId: UUID): Promise<void> {
-    const clientRecord = new this.clientRecord({
-      _id: randomUUID(),
-      clientId: clientId,
-      organisationId: organisationId,
-      sinceFrom: new Date(),
-    });
-    await clientRecord.save();
+    const clientRecord = new ClientRecord(clientId, organisationId);
+    await this.clientRecordsRepository.save(clientRecord);
   }
 }
