@@ -4,8 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule } from './clients/clients.module';
 import { OrganisationsModule } from './organisations/organisations.module';
 import { Client } from './clients/client/client.entity';
-import { Relation } from './clients/client/clientRelation.entity';
+import { Membership } from './memberships/memberships.entity';
 import { Organisation } from './organisations/organisation/organisation.entity';
+import { MembershipsModule } from './memberships/memberships.module';
 
 @Module({
   imports: [
@@ -21,13 +22,14 @@ import { Organisation } from './organisations/organisation/organisation.entity';
         username: configService.get<string>('DATABASE_USERNAME'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [Client, Relation, Organisation],
+        entities: [Client, Membership, Organisation],
         synchronize: configService.get<string>('ENVIRONMENT') === 'dev',
       }),
       inject: [ConfigService],
     }),
     ClientsModule,
     OrganisationsModule,
+    MembershipsModule,
   ],
 })
 export class AppModule {}
