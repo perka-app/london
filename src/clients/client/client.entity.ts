@@ -17,9 +17,6 @@ export class Client {
   email: string;
 
   @Column()
-  dateOfBirth: Date;
-
-  @Column()
   isStudent: boolean;
 
   //todo: do we need isEmailConfirmed?
@@ -29,7 +26,6 @@ export class Client {
       this.clientId = randomUUID();
       this.name = clientDTO.name;
       this.email = clientDTO.email;
-      this.dateOfBirth = new Date(clientDTO.dateOfBirth);
       this.isStudent = clientDTO.isStudent;
     }
   }

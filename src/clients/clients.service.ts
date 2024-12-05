@@ -29,7 +29,7 @@ export class ClientsService {
     return this.clientsRepository.existsBy(where);
   }
 
-  async canRegister(clientDTO: ClientDTO): Promise<boolean> {
+  async isEmailUsed(clientDTO: ClientDTO): Promise<boolean> {
     const where: FindOptionsWhere<Client> = { email: clientDTO.email };
     return !(await this.clientsRepository.existsBy(where));
   }

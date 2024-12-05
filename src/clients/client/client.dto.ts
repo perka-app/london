@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
-
+import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class ClientDTO {
   @IsString()
@@ -13,9 +7,6 @@ export class ClientDTO {
 
   @IsEmail()
   email: string;
-
-  @IsString()
-  dateOfBirth: string;
 
   @IsBoolean()
   isStudent: boolean;

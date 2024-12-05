@@ -4,14 +4,14 @@ import { Organisation } from './organisation/organisation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Membership } from '../memberships/memberships.entity';
+import { MembershipsService } from 'src/memberships/memberships.service';
 
 @Injectable()
 export class OrganisationsService {
   constructor(
     @InjectRepository(Organisation)
     private organisationsRepository: Repository<Organisation>,
-    @InjectRepository(Membership)
-    private clientRecordsRepository: Repository<Membership>,
+    private readonly membershipsService: MembershipsService,
   ) {}
 
   async createOrganisation(organisation: Organisation): Promise<string> {
@@ -21,6 +21,6 @@ export class OrganisationsService {
 
   async addClient(clientId: UUID, organisationId: UUID): Promise<void> {
     const clientRecord = new Membership(clientId, organisationId);
-    await this.clientRecordsRepository.save(clientRecord);
+    await this.membershipsService.createMembership(clientRecord);
   }
 }

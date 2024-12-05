@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -11,14 +12,20 @@ import {
 import { OrganisationsService } from './organisations.service';
 import { ClientsService } from 'src/clients/clients.service';
 import { UUID } from 'crypto';
-import { OrganisationDTO } from './organisation/organisation.dto';
+import {
+  ClientsCountDTO,
+  OrganisationDTO,
+} from './organisation/organisation.dto';
 import { Organisation } from './organisation/organisation.entity';
+import { MembershipsService } from 'src/memberships/memberships.service';
+import { count } from 'console';
 
 @Controller('organisations')
 export class OrganisationsController {
   constructor(
     private readonly organisationsService: OrganisationsService,
     private readonly clientsService: ClientsService,
+    private readonly membershipsService: MembershipsService,
   ) {}
 
   @Post()
@@ -48,6 +55,21 @@ export class OrganisationsController {
         );
       }
       await this.organisationsService.addClient(clientId, organisationId);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('clients_count')
+  @HttpCode(HttpStatus.OK)
+  async getClientsCount(
+    @Query('organisationId', ParseUUIDPipe) organisationId: UUID,
+  ): Promise<ClientsCountDTO> {
+    try {
+      const count = await this.membershipsService.getMembersCount(
+        organisationId,
+      );
+      return new ClientsCountDTO(organisationId, count);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -4,7 +4,6 @@ import { OrganisationsController } from './organisations.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organisation } from './organisation/organisation.entity';
 import { ClientsModule } from 'src/clients/clients.module';
-import { Membership } from '../memberships/memberships.entity';
 import { MembershipsModule } from 'src/memberships/memberships.module';
 
 @Module({
