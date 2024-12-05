@@ -66,7 +66,7 @@ Entities diagram: https://drive.google.com/file/d/1vYVhHjyIKU8EMoz7DV1YyjY_lzAsz
 
 To run this service locally you need:
 
-1. ENV properties:
+### 1. ENV properties:
 
 ```env
 ENVIRONMENT=dev/prod
@@ -78,8 +78,14 @@ DATABASE_PASSWORD=password
 DATABASE_NAME=postgres_db
 ```
 
-2. PostgresDB instance:
+### 2. PostgresDB instance:
 
 ```sh
 docker run --name postgres_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres_db -p 5432:5432 -d postgres:latest
+```
+
+### Database inspection:
+
+```sh
+docker exec -it postgres_db psql -U root -d postgres_db
 ```
