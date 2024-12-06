@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { UUID } from 'crypto';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Email } from './email.entity';
 
 export class SendEmailDTO {

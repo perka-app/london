@@ -9,6 +9,7 @@ import { Organisation } from './organisations/organisation/organisation.entity';
 import { MembershipsModule } from './memberships/memberships.module';
 import { EmailsModule } from './emails/emails.module';
 import { Email } from './emails/email/email.entity';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -34,5 +35,6 @@ import { Email } from './emails/email/email.entity';
     MembershipsModule,
     EmailsModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

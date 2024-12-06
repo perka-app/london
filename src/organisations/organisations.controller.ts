@@ -18,7 +18,6 @@ import {
 } from './organisation/organisation.dto';
 import { Organisation } from './organisation/organisation.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
-import { count } from 'console';
 
 @Controller('organisations')
 export class OrganisationsController {

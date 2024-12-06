@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { randomUUID, UUID } from 'crypto';
+import {  UUID } from 'crypto';
 import { ClientDTO } from './client/client.dto';
 import { Client } from './client/client.entity';
 import { FindOptionsWhere, In, Repository } from 'typeorm';
