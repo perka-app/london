@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { randomUUID, UUID } from 'crypto';
 import { ClientDTO } from './client/client.dto';
 import { Client } from './client/client.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsWhere, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -20,17 +20,22 @@ export class ClientsService {
     return newClient.clientId;
   }
 
-  async getClientCount(): Promise<number> {
-    return this.clientsRepository.count();
-  }
-
   async clientExists(clientId: UUID): Promise<boolean> {
     const where: FindOptionsWhere<Client> = { clientId: clientId };
+
     return this.clientsRepository.existsBy(where);
   }
 
   async isEmailUsed(clientDTO: ClientDTO): Promise<boolean> {
     const where: FindOptionsWhere<Client> = { email: clientDTO.email };
+
     return !(await this.clientsRepository.existsBy(where));
+  }
+
+  async getClientsEmails(clientsUUIDs: UUID[]): Promise<string[]> {
+    const where: FindOptionsWhere<Client> = { clientId: In(clientsUUIDs) };
+    const clients = await this.clientsRepository.findBy(where);
+
+    return clients.map((client) => client.email);
   }
 }

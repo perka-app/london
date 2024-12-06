@@ -54,6 +54,16 @@ export class OrganisationsController {
           HttpStatus.BAD_REQUEST,
         );
       }
+
+      if (
+        await this.membershipsService.membershipExists(clientId, organisationId)
+      ) {
+        throw new HttpException(
+          'Client is already a member of this organisation',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       await this.organisationsService.addClient(clientId, organisationId);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -66,7 +76,7 @@ export class OrganisationsController {
     @Query('organisationId', ParseUUIDPipe) organisationId: UUID,
   ): Promise<ClientsCountDTO> {
     try {
-      const count = await this.membershipsService.getMembersCount(
+      const count = await this.membershipsService.getClientsIdCount(
         organisationId,
       );
       return new ClientsCountDTO(organisationId, count);

@@ -9,15 +9,15 @@ export class Membership {
 
   @Column()
   @IsNotEmpty()
-  ClientId: UUID;
+  clientId: UUID;
 
   @Column()
   @IsNotEmpty()
   organisationId: UUID;
 
-  constructor(ClientId: UUID, organisationId: UUID) {
+  constructor(clientId: UUID, organisationId: UUID) {
     this.membershipId = randomUUID();
-    this.ClientId = ClientId;
+    this.clientId = clientId;
     this.organisationId = organisationId;
   }
 }

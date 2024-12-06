@@ -13,13 +13,36 @@ export class MembershipsService {
 
   async createMembership(membership: Membership): Promise<string> {
     await this.membershipsRepository.save(membership);
+
     return membership.membershipId;
   }
 
-  async getMembersCount(organisationId: UUID): Promise<number> {
+  async membershipExists(
+    clientId: UUID,
+    organisationId: UUID,
+  ): Promise<boolean> {
+    const where: FindOptionsWhere<Membership> = {
+      clientId: clientId,
+      organisationId: organisationId,
+    };
+
+    return this.membershipsRepository.existsBy(where);
+  }
+
+  async getClientsIdCount(organisationId: UUID): Promise<number> {
     const where: FindOptionsWhere<Membership> = {
       organisationId: organisationId,
     };
+
     return await this.membershipsRepository.countBy(where);
+  }
+
+  async getClientsId(organisationId: UUID): Promise<UUID[]> {
+    const where: FindOptionsWhere<Membership> = {
+      organisationId: organisationId,
+    };
+    const memberships = await this.membershipsRepository.findBy(where);
+
+    return memberships.map((membership) => membership.clientId);
   }
 }

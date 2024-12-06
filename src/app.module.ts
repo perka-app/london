@@ -7,6 +7,8 @@ import { Client } from './clients/client/client.entity';
 import { Membership } from './memberships/memberships.entity';
 import { Organisation } from './organisations/organisation/organisation.entity';
 import { MembershipsModule } from './memberships/memberships.module';
+import { EmailsModule } from './emails/emails.module';
+import { Email } from './emails/email/email.entity';
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { MembershipsModule } from './memberships/memberships.module';
         username: configService.get<string>('DATABASE_USERNAME'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [Client, Membership, Organisation],
+        entities: [Client, Membership, Organisation, Email],
         synchronize: configService.get<string>('ENVIRONMENT') === 'dev',
       }),
       inject: [ConfigService],
@@ -30,6 +32,7 @@ import { MembershipsModule } from './memberships/memberships.module';
     ClientsModule,
     OrganisationsModule,
     MembershipsModule,
+    EmailsModule,
   ],
 })
 export class AppModule {}
