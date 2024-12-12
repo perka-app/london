@@ -65,4 +65,30 @@ export class EmailsController {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Post('test')
+  @HttpCode(HttpStatus.CREATED)
+  async sendTestEmail(
+    @Body() emailRequest: SendEmailDTO,
+  ): Promise<EmailStatus> {
+    try {
+      const email = new Email(
+        emailRequest,
+        'c9ab89ce-2464-4ab5-9c2a-8ef7e2339a2b',
+      );
+
+      const confirmedEmail = await this.emailsService
+        .sendTestEmail(email, [])
+        .catch((err) => {
+          throw new HttpException(
+            'Unable to send email: ' + err.message,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        });
+
+      return new EmailStatus(confirmedEmail);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
