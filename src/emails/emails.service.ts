@@ -1,57 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Email } from './email/email.entity';
-import { Repository } from 'typeorm';
-
+import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Email } from './email/email.entity';
+import { Client } from 'src/clients/client/client.entity';
+import { OrganisationsService } from 'src/organisations/organisations.service';
+import * as FormData from 'form-data';
+import Mailgun, { MailgunMessageData, MessagesSendResult } from 'mailgun.js';
+import * as fs from 'fs';
+import * as path from 'path';
 import { IMailgunClient } from 'mailgun.js/Interfaces';
-import formData from 'form-data';
-import Mailgun, { MailgunMessageData } from 'mailgun.js';
 
 @Injectable()
 export class EmailsService {
+  private mailgunClient: IMailgunClient;
+  private emailFooter: string;
+  private fromAddress: string;
+
   constructor(
     @InjectRepository(Email)
     private emailsRepository: Repository<Email>,
     private configService: ConfigService,
-  ) {}
+    private organisationsService: OrganisationsService,
+  ) {
+    const mailgun = new Mailgun(FormData);
+    this.mailgunClient = mailgun.client({
+      username: 'api',
+      key: this.configService.get<string>('MAILGUN_API_KEY') as string,
+    });
 
-  MAILGUN_API_KEY = this.configService.get<string>('MAILGUN_API_KEY') as string;
-  MAILGUN_DOMAIN = this.configService.get<string>('MAILGUN_DOMAIN') as string;
+    // Load JSON file with text templates
+    const textTemplatesPath = path.join(
+      process.cwd(),
+      'assets/emailAssets.json',
+    );
+    const textTemplatesContent = fs.readFileSync(textTemplatesPath, 'utf8');
+    const textTemplates = JSON.parse(textTemplatesContent);
+    this.emailFooter = textTemplates.footer;
+    this.fromAddress = textTemplates.from;
+  }
 
-  private client = new Mailgun(FormData).client({
-    username: 'api',
-    key: this.MAILGUN_API_KEY,
-  });
+  async sendEmail(email: Email, recivers: Client[]): Promise<Email> {
+    const organisationName = await this.organisationsService.getName(
+      email.organisationId,
+    );
 
-  async sendEmail(email: Email, reciversEmails: string[]): Promise<Email> {
-    // Send the email
-    // thow an error if the email could not be sent
+    const from = `${organisationName} <${this.fromAddress}>`;
+
+    for (const reciver of recivers) {
+      const emailText =
+        email.text + this.emailFooter.replace('{{email}}', reciver.email);
+
+      const emailData = {
+        to: reciver.email,
+        from,
+        subject: email.subject,
+        text: email.text,
+        html: emailText,
+      };
+
+      await this.send(emailData);
+    }
+
     email.sentAt = new Date();
-    email.reciversCount = reciversEmails.length;
-
+    email.reciversCount = recivers.length;
     await this.emailsRepository.save(email);
-    return email;
-  }
-
-  async sendTestEmail(email: Email, reciversEmails: string[]): Promise<Email> {
-    const emailData: MailgunMessageData = {
-      to: ['maksim.peg.pl@gmail.com'],
-      from: 'Excited User <no-reply@perka.com>',
-      subject: 'Hello',
-      text: 'Testing some Mailgun awesomeness!',
-      html: email.text,
-    };
-
-    await this.send(emailData);
 
     return email;
   }
 
-  async send(email: MailgunMessageData): Promise<void> {
-    await this.client.messages
-      .create(this.MAILGUN_DOMAIN, email)
-      .then((msg) => console.log(msg))
+  private async send(email: MailgunMessageData): Promise<void> {
+    await this.mailgunClient.messages
+      .create(this.configService.get<string>('MAILGUN_DOMAIN') as string, email)
+      .then((msg: MessagesSendResult) => console.log(msg))
       .catch((err) => {
         console.log(err);
         throw new Error(err.details);

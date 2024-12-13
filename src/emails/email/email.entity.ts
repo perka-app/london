@@ -12,6 +12,10 @@ export class Email {
   @IsNotEmpty()
   organisationId: UUID;
 
+  @Column({ type: 'text', nullable: true })
+  @IsNotEmpty()
+  subject: string;
+
   @Column({ type: 'text' })
   @IsNotEmpty()
   text: string;
@@ -29,6 +33,7 @@ export class Email {
       this.emailId = randomUUID();
       this.organisationId = organisationId;
       this.text = emailDTO.text;
+      this.subject = emailDTO.subject;
     }
   }
 }

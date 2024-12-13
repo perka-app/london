@@ -4,6 +4,10 @@ import { Email } from './email.entity';
 export class SendEmailDTO {
   @IsString()
   @IsNotEmpty()
+  subject: string;
+
+  @IsString()
+  @IsNotEmpty()
   text: string;
 }
 

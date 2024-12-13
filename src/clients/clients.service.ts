@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {  UUID } from 'crypto';
+import { UUID } from 'crypto';
 import { ClientDTO } from './client/client.dto';
 import { Client } from './client/client.entity';
 import { FindOptionsWhere, In, Repository } from 'typeorm';
@@ -32,10 +32,10 @@ export class ClientsService {
     return !(await this.clientsRepository.existsBy(where));
   }
 
-  async getClientsEmails(clientsUUIDs: UUID[]): Promise<string[]> {
+  async getClients(clientsUUIDs: UUID[]): Promise<Client[]> {
     const where: FindOptionsWhere<Client> = { clientId: In(clientsUUIDs) };
     const clients = await this.clientsRepository.findBy(where);
 
-    return clients.map((client) => client.email);
+    return clients;
   }
 }

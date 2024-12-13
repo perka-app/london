@@ -23,4 +23,16 @@ export class OrganisationsService {
     const clientRecord = new Membership(clientId, organisationId);
     await this.membershipsService.createMembership(clientRecord);
   }
+
+  async getName(organisationId: UUID): Promise<string> {
+    const organisation = await this.organisationsRepository.findOneBy({
+      organisationId: organisationId,
+    });
+
+    if (!organisation) {
+      throw new Error(`Organisation by id ${organisationId} not found`);
+    }
+
+    return organisation.name;
+  }
 }

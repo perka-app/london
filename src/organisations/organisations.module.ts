@@ -15,5 +15,6 @@ import { MembershipsModule } from 'src/memberships/memberships.module';
   ],
   providers: [OrganisationsService],
   controllers: [OrganisationsController],
+  exports: [OrganisationsService],
 })
 export class OrganisationsModule {}
