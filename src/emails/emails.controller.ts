@@ -10,8 +10,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { EmailsService } from './emails.service';
-import { EmailStatus, SendEmailDTO } from './email/email.dto';
-import { Email } from './email/email.entity';
+import { EmailStatus, SendEmailDTO } from './models/email.dto';
+import { Email } from './models/email.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { UUID } from 'crypto';
 import { ClientsService } from 'src/clients/clients.service';

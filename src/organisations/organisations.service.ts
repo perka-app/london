@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UUID } from 'crypto';
-import { Organisation } from './organisation/organisation.entity';
+import { Organisation } from './models/organisation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Membership } from '../memberships/memberships.entity';
@@ -34,5 +34,15 @@ export class OrganisationsService {
     }
 
     return organisation.name;
+  }
+
+  async getOrganisationByUserName(
+    userName: string,
+  ): Promise<Organisation | null> {
+    const organisation = await this.organisationsRepository.findOneBy({
+      userName: userName,
+    });
+
+    return organisation;
   }
 }

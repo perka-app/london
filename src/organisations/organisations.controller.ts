@@ -12,11 +12,8 @@ import {
 import { OrganisationsService } from './organisations.service';
 import { ClientsService } from 'src/clients/clients.service';
 import { UUID } from 'crypto';
-import {
-  ClientsCountDTO,
-  OrganisationDTO,
-} from './organisation/organisation.dto';
-import { Organisation } from './organisation/organisation.entity';
+import { ClientsCountDTO, OrganisationDTO } from './models/organisation.dto';
+import { Organisation } from './models/organisation.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
 
 @Controller('organisations')

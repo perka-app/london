@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
-import { ClientDTO } from './client/client.dto';
+import { ClientDTO } from './models/client.dto';
 
 @Controller('clients')
 export class ClientsController {
