@@ -2,12 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpException,
   HttpStatus,
   ParseUUIDPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { OrganisationsService } from './organisations.service';
 import { ClientsService } from 'src/clients/clients.service';
@@ -15,6 +17,7 @@ import { UUID } from 'crypto';
 import { ClientsCountDTO, OrganisationDTO } from './models/organisation.dto';
 import { Organisation } from './models/organisation.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('organisations')
 export class OrganisationsController {
@@ -37,39 +40,11 @@ export class OrganisationsController {
     }
   }
 
-  @Post('clients')
-  @HttpCode(HttpStatus.CREATED)
-  async addClient(
-    @Query('clientId', ParseUUIDPipe) clientId: UUID,
-    @Query('organisationId', ParseUUIDPipe) organisationId: UUID,
-  ): Promise<void> {
-    try {
-      if (!(await this.clientsService.clientExists(clientId))) {
-        throw new HttpException(
-          'Client does not exist',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      if (
-        await this.membershipsService.membershipExists(clientId, organisationId)
-      ) {
-        throw new HttpException(
-          'Client is already a member of this organisation',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      await this.organisationsService.addClient(clientId, organisationId);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
+  @UseGuards(AuthGuard)
   @Get('clients_count')
   @HttpCode(HttpStatus.OK)
   async getClientsCount(
-    @Query('organisationId', ParseUUIDPipe) organisationId: UUID,
+    @Headers('id') organisationId: UUID,
   ): Promise<ClientsCountDTO> {
     try {
       const count = await this.membershipsService.getClientsIdCount(

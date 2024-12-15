@@ -6,6 +6,7 @@ import { EmailsController } from './emails.controller';
 import { ClientsModule } from 'src/clients/clients.module';
 import { MembershipsModule } from 'src/memberships/memberships.module';
 import { OrganisationsModule } from 'src/organisations/organisations.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { OrganisationsModule } from 'src/organisations/organisations.module';
     ClientsModule,
     MembershipsModule,
     OrganisationsModule,
+    JwtModule,
   ],
   providers: [EmailsService],
   exports: [EmailsService],

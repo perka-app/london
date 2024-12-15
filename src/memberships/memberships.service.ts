@@ -17,6 +17,15 @@ export class MembershipsService {
     return membership.membershipId;
   }
 
+  async deleteMembership(clientId: UUID, organisationId: UUID): Promise<void> {
+    const where: FindOptionsWhere<Membership> = {
+      clientId: clientId,
+      organisationId: organisationId,
+    };
+
+    await this.membershipsRepository.delete(where);
+  }
+
   async membershipExists(
     clientId: UUID,
     organisationId: UUID,

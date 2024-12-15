@@ -1,13 +1,14 @@
 import {
   Body,
   Controller,
-  Get,
+  Headers,
   HttpCode,
   HttpException,
   HttpStatus,
   ParseUUIDPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { EmailsService } from './emails.service';
 import { EmailStatus, SendEmailDTO } from './models/email.dto';
@@ -15,6 +16,7 @@ import { Email } from './models/email.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { UUID } from 'crypto';
 import { ClientsService } from 'src/clients/clients.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('emails')
 export class EmailsController {
@@ -24,10 +26,11 @@ export class EmailsController {
     private readonly membershipsService: MembershipsService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async sendEmail(
-    @Query('organisationId', ParseUUIDPipe) organisationId: UUID,
+    @Headers('id') organisationId: UUID,
     @Body() emailRequest: SendEmailDTO,
   ): Promise<EmailStatus> {
     try {

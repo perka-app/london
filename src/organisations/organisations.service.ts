@@ -19,7 +19,7 @@ export class OrganisationsService {
     return organisation.organisationId;
   }
 
-  async addClient(clientId: UUID, organisationId: UUID): Promise<void> {
+  async createMembership(clientId: UUID, organisationId: UUID): Promise<void> {
     const clientRecord = new Membership(clientId, organisationId);
     await this.membershipsService.createMembership(clientRecord);
   }
