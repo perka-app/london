@@ -34,8 +34,11 @@ export class OrganisationsController {
   ): Promise<void> {
     try {
       const organisation = new Organisation(organisationDTO);
+
       await this.organisationsService.createOrganisation(organisation);
     } catch (err) {
+      if (err instanceof HttpException) throw err;
+
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -50,8 +53,11 @@ export class OrganisationsController {
       const count = await this.membershipsService.getClientsIdCount(
         organisationId,
       );
+
       return new ClientsCountDTO(organisationId, count);
     } catch (err) {
+      if (err instanceof HttpException) throw err;
+
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

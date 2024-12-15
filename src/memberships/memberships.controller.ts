@@ -49,6 +49,8 @@ export class MembershipsController {
         organisationId,
       );
     } catch (err) {
+      if (err instanceof HttpException) throw err;
+
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -74,6 +76,8 @@ export class MembershipsController {
 
       await this.membershipsService.deleteMembership(clientId, organisationId);
     } catch (err) {
+      if (err instanceof HttpException) throw err;
+
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

@@ -65,6 +65,8 @@ export class EmailsController {
 
       return new EmailStatus(confirmedEmail);
     } catch (err) {
+      if (err instanceof HttpException) throw err;
+
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
