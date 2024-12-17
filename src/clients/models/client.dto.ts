@@ -7,7 +7,4 @@ export class ClientDTO {
 
   @IsEmail()
   email: string;
-
-  @IsBoolean()
-  isStudent: boolean;
 }

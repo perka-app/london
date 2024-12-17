@@ -16,9 +16,6 @@ export class Client {
   @IsNotEmpty()
   email: string;
 
-  @Column()
-  isStudent: boolean;
-
   //todo: do we need isEmailConfirmed?
 
   constructor(clientDTO?: ClientDTO) {
@@ -26,7 +23,6 @@ export class Client {
       this.clientId = randomUUID();
       this.name = clientDTO.name;
       this.email = clientDTO.email;
-      this.isStudent = clientDTO.isStudent;
     }
   }
 }

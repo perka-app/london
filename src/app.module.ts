@@ -26,7 +26,7 @@ import { AuthModule } from './auth/auth.module';
         username: configService.get<string>('DATABASE_USERNAME'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [Client, Membership, Organisation, Email],
+        autoLoadEntities: true,
         synchronize: configService.get<string>('ENVIRONMENT') === 'dev',
       }),
       inject: [ConfigService],
