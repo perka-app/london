@@ -48,6 +48,7 @@ export class EmailsService {
     const from = `${organisationName} <${this.fromAddress}>`;
 
     for (const reciver of recivers) {
+      reciver.decryptSensitiveData();
       const emailText =
         email.text + this.emailFooter.replace('{{email}}', reciver.email);
 

@@ -2,6 +2,7 @@ import { randomUUID, UUID } from 'crypto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ClientDTO } from './client.dto';
 import { IsNotEmpty } from 'class-validator';
+import { aesEncrypt } from 'src/common/aesHelper';
 
 @Entity()
 export class Client {
@@ -13,8 +14,15 @@ export class Client {
   name: string;
 
   @Column({ unique: true, nullable: false })
-  @IsNotEmpty()
   email: string;
+
+  public encryptSensitiveData(): void {
+    this.email = aesEncrypt(this.email);
+  }
+
+  public decryptSensitiveData(): void {
+    this.email = aesEncrypt(this.email);
+  }
 
   //todo: do we need isEmailConfirmed?
 

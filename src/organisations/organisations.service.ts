@@ -15,6 +15,7 @@ export class OrganisationsService {
   ) {}
 
   async createOrganisation(organisation: Organisation): Promise<string> {
+    await organisation.hashPassword();
     await this.organisationsRepository.save(organisation);
     return organisation.organisationId;
   }

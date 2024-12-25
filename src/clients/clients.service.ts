@@ -4,6 +4,7 @@ import { ClientDTO } from './models/client.dto';
 import { Client } from './models/client.entity';
 import { FindOptionsWhere, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { aesEncrypt } from 'src/common/aesHelper';
 
 @Injectable()
 export class ClientsService {
@@ -14,6 +15,7 @@ export class ClientsService {
 
   async create(clientDTO: ClientDTO): Promise<UUID> {
     const newClient = new Client(clientDTO);
+    newClient.encryptSensitiveData();
 
     await this.clientsRepository.save(newClient);
 
@@ -27,7 +29,8 @@ export class ClientsService {
   }
 
   async isEmailUsed(clientDTO: ClientDTO): Promise<boolean> {
-    const where: FindOptionsWhere<Client> = { email: clientDTO.email };
+    const encodeEmail = aesEncrypt(clientDTO.email);
+    const where: FindOptionsWhere<Client> = { email: encodeEmail };
 
     return !(await this.clientsRepository.existsBy(where));
   }

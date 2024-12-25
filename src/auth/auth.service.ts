@@ -22,7 +22,7 @@ export class AuthService {
     }
 
     // Check password
-    if (password !== organisation.password) {
+    if (!(await organisation.validatePassword(password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
