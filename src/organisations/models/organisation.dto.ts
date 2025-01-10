@@ -9,11 +9,14 @@ export class OrganisationDTO {
   @IsString()
   @IsNotEmpty()
   @Validate(IsUserNameValid)
-  userName: string;
+  login: string;
 
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @IsString()
+  description: string;
 }
 
 export class ClientsCountDTO {

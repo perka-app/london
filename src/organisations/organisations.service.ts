@@ -37,11 +37,9 @@ export class OrganisationsService {
     return organisation.name;
   }
 
-  async getOrganisationByUserName(
-    userName: string,
-  ): Promise<Organisation | null> {
+  async getOrganisationByUserName(login: string): Promise<Organisation | null> {
     const organisation = await this.organisationsRepository.findOneBy({
-      userName: userName,
+      login: login,
     });
 
     return organisation;

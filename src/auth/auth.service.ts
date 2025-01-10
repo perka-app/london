@@ -10,12 +10,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signInOrganisation(
-    username: string,
-    password: string,
-  ): Promise<string> {
+  async signInOrganisation(login: string, password: string): Promise<string> {
     const organisation =
-      await this.organisationsService.getOrganisationByUserName(username);
+      await this.organisationsService.getOrganisationByUserName(login);
 
     if (!organisation) {
       throw new UnauthorizedException('Invalid credentials');

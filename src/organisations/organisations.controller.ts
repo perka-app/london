@@ -23,7 +23,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class OrganisationsController {
   constructor(
     private readonly organisationsService: OrganisationsService,
-    private readonly clientsService: ClientsService,
     private readonly membershipsService: MembershipsService,
   ) {}
 

@@ -9,17 +9,20 @@ export class Organisation {
   @PrimaryColumn({ nullable: false })
   organisationId: UUID;
 
-  @Column()
+  @Column({ unique: true })
   @IsNotEmpty()
   name: string;
 
   @Column({ unique: true, nullable: false })
   @IsNotEmpty()
-  userName: string;
+  login: string;
 
   @Column()
   @IsNotEmpty()
   password: string;
+
+  @Column({ nullable: true })
+  description: string;
 
   public async hashPassword(): Promise<void> {
     this.password = await hashPassword(this.password);
@@ -33,8 +36,9 @@ export class Organisation {
     if (clientDTO) {
       this.organisationId = randomUUID();
       this.name = clientDTO.name;
-      this.userName = clientDTO.userName;
+      this.login = clientDTO.login;
       this.password = clientDTO.password;
+      this.description = clientDTO.description;
     }
   }
 }
