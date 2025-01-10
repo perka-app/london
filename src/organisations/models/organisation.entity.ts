@@ -31,10 +31,6 @@ export class Organisation {
     this.password = await hashPassword(this.password);
   }
 
-  public async validatePassword(password: string): Promise<boolean> {
-    return await comparePassword(password, this.password);
-  }
-
   constructor(clientDTO?: OrganisationDTO) {
     if (clientDTO) {
       this.organisationId = randomUUID();

@@ -63,23 +63,4 @@ export class OrganisationsController {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @UseGuards(AuthGuard)
-  @Get('clients_count')
-  @HttpCode(HttpStatus.OK)
-  async getClientsCount(
-    @Headers('id') organisationId: UUID,
-  ): Promise<ClientsCountDTO> {
-    try {
-      const count = await this.membershipsService.getClientsIdCount(
-        organisationId,
-      );
-
-      return new ClientsCountDTO(organisationId, count);
-    } catch (err) {
-      if (err instanceof HttpException) throw err;
-
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
 }

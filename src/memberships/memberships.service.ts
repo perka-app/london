@@ -11,10 +11,10 @@ export class MembershipsService {
     private membershipsRepository: Repository<Membership>,
   ) {}
 
-  async createMembership(membership: Membership): Promise<string> {
-    await this.membershipsRepository.save(membership);
-
-    return membership.membershipId;
+  async createMembership(clientId: UUID, organisationId: UUID): Promise<void> {
+    await this.membershipsRepository.save(
+      new Membership(clientId, organisationId),
+    );
   }
 
   async deleteMembership(clientId: UUID, organisationId: UUID): Promise<void> {
@@ -26,6 +26,7 @@ export class MembershipsService {
     await this.membershipsRepository.delete(where);
   }
 
+  // Information exposing
   async membershipExists(
     clientId: UUID,
     organisationId: UUID,

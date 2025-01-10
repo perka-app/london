@@ -22,11 +22,7 @@ export class OrganisationsService {
     return organisation.organisationId;
   }
 
-  async createMembership(clientId: UUID, organisationId: UUID): Promise<void> {
-    const clientRecord = new Membership(clientId, organisationId);
-    await this.membershipsService.createMembership(clientRecord);
-  }
-
+  // Information exposing
   async getName(organisationId: UUID): Promise<string> {
     const organisation = await this.organisationsRepository.findOneBy({
       organisationId: organisationId,
@@ -39,14 +35,19 @@ export class OrganisationsService {
     return organisation.name;
   }
 
-  async getOrganisationByUserName(login: string): Promise<Organisation | null> {
+  async getOrganisationByCredentials(
+    login: string,
+    password: string,
+  ): Promise<Organisation | null> {
     const organisation = await this.organisationsRepository.findOneBy({
-      login: login,
+      login,
+      password,
     });
 
     return organisation;
   }
 
+  // Editing information
   async uploadAvatar(
     organisationId: UUID,
     file: Express.Multer.File,

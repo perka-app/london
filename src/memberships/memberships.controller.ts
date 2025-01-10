@@ -34,7 +34,6 @@ export class MembershipsController {
           HttpStatus.BAD_REQUEST,
         );
       }
-
       if (
         await this.membershipsService.membershipExists(clientId, organisationId)
       ) {
@@ -44,10 +43,7 @@ export class MembershipsController {
         );
       }
 
-      await this.organisationsService.createMembership(
-        clientId,
-        organisationId,
-      );
+      await this.membershipsService.createMembership(clientId, organisationId);
     } catch (err) {
       if (err instanceof HttpException) throw err;
 

@@ -12,14 +12,12 @@ export class AuthService {
 
   async signInOrganisation(login: string, password: string): Promise<string> {
     const organisation =
-      await this.organisationsService.getOrganisationByUserName(login);
+      await this.organisationsService.getOrganisationByCredentials(
+        login,
+        password,
+      );
 
     if (!organisation) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // Check password
-    if (!(await organisation.validatePassword(password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
