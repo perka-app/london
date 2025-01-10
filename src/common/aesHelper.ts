@@ -10,6 +10,7 @@ const iv = Buffer.alloc(16, 0);
 export const aesEncrypt = (text: string): string => {
   const cipher = crypto.createCipheriv(algorithm, key, iv);
   let encrypted = cipher.update(text);
+
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return iv.toString('hex') + ':' + encrypted.toString('hex');
 };
@@ -20,6 +21,8 @@ export const aesDecrypt = (text: string): string => {
   const encryptedText = Buffer.from(textParts.join(':'), 'hex');
   const decipher = crypto.createDecipheriv(algorithm, key, iv);
   let decrypted = decipher.update(encryptedText);
+
   decrypted = Buffer.concat([decrypted, decipher.final()]);
+
   return decrypted.toString();
 };

@@ -24,12 +24,12 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Nest](https://github.com/nestjs/nest) API for PERKA.
 
-## Project setup
+## Project installation
 
 ```bash
-$ npm install
+$ npm i
 ```
 
 ## Compile and run the project
@@ -66,10 +66,14 @@ Entities diagram: https://drive.google.com/file/d/1vYVhHjyIKU8EMoz7DV1YyjY_lzAsz
 
 To run this service locally you need:
 
-### 1. ENV properties:
+### 1. Create an `.env` file in the root of the project with the following content:
 
 ```env
-ENVIRONMENT=dev/prod
+AES_KEY=aes_key
+MAILGUN_API_KEY=mailgun_api_key
+
+ENVIRONMENT=dev
+PORT=3000
 
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
