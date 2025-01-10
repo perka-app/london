@@ -21,8 +21,11 @@ export class Organisation {
   @IsNotEmpty()
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 150 })
   description: string;
+
+  @Column({ nullable: true })
+  avatarUrl: string;
 
   public async hashPassword(): Promise<void> {
     this.password = await hashPassword(this.password);

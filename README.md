@@ -69,6 +69,12 @@ To run this service locally you need:
 ### 1. Create an `.env` file in the root of the project with the following content:
 
 ```env
+AWS_ACCESS_KEY_ID=access_key
+AWS_SECRET_ACCESS_KEY=secret_key
+
+S3_BUCKET_NAME=perka-api-bucket
+S3_REGION=eu-north-1
+
 AES_KEY=aes_key
 MAILGUN_API_KEY=mailgun_api_key
 

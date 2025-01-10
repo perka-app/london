@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, Validate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Validate,
+} from 'class-validator';
 import { IsUserNameValid } from './organisation.validator';
 
 export class OrganisationDTO {
@@ -16,7 +22,13 @@ export class OrganisationDTO {
   password: string;
 
   @IsString()
+  @IsOptional()
+  @MaxLength(150)
   description: string;
+
+  @IsString()
+  @IsOptional()
+  avatarUrl: string;
 }
 
 export class ClientsCountDTO {

@@ -3,14 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule } from './clients/clients.module';
 import { OrganisationsModule } from './organisations/organisations.module';
-import { Client } from './clients/models/client.entity';
-import { Membership } from './memberships/memberships.entity';
-import { Organisation } from './organisations/models/organisation.entity';
 import { MembershipsModule } from './memberships/memberships.module';
 import { EmailsModule } from './emails/emails.module';
-import { Email } from './emails/models/email.entity';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [
@@ -36,6 +33,7 @@ import { AuthModule } from './auth/auth.module';
     MembershipsModule,
     EmailsModule,
     AuthModule,
+    S3Module,
   ],
   controllers: [AppController],
 })

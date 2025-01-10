@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,7 +6,7 @@ import { Email } from './models/email.entity';
 import { Client } from 'src/clients/models/client.entity';
 import { OrganisationsService } from 'src/organisations/organisations.service';
 import * as FormData from 'form-data';
-import Mailgun, { MailgunMessageData, MessagesSendResult } from 'mailgun.js';
+import Mailgun, { MailgunMessageData } from 'mailgun.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IMailgunClient } from 'mailgun.js/Interfaces';
@@ -16,6 +16,7 @@ export class EmailsService {
   private mailgunClient: IMailgunClient;
   private emailFooter: string;
   private fromAddress: string;
+  private logger = new Logger('EmailsService');
 
   constructor(
     @InjectRepository(Email)
@@ -73,9 +74,8 @@ export class EmailsService {
   private async send(email: MailgunMessageData): Promise<void> {
     await this.mailgunClient.messages
       .create(this.configService.get<string>('MAILGUN_DOMAIN') as string, email)
-      .then((msg: MessagesSendResult) => console.log(msg))
       .catch((err) => {
-        console.log(err);
+        this.logger.error('Failed to send email', err);
         throw new Error(err.details);
       });
   }

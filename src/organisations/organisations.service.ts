@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Membership } from '../memberships/memberships.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class OrganisationsService {
@@ -12,6 +13,7 @@ export class OrganisationsService {
     @InjectRepository(Organisation)
     private organisationsRepository: Repository<Organisation>,
     private readonly membershipsService: MembershipsService,
+    private readonly S3Service: S3Service,
   ) {}
 
   async createOrganisation(organisation: Organisation): Promise<string> {
@@ -43,5 +45,19 @@ export class OrganisationsService {
     });
 
     return organisation;
+  }
+
+  async uploadAvatar(
+    organisationId: UUID,
+    file: Express.Multer.File,
+  ): Promise<string> {
+    const key = `${file.fieldname}${Date.now()}`;
+    const imageUrl = await this.S3Service.uploadFile(file, key);
+
+    await this.organisationsRepository.update(
+      { organisationId },
+      { avatarUrl: imageUrl },
+    );
+    return imageUrl;
   }
 }
