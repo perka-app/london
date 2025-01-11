@@ -94,6 +94,12 @@ DATABASE_NAME=postgres_db
 docker run --name postgres_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres_db -p 5432:5432 -d postgres:latest
 ```
 
+- Setup initial db schema
+
+```sh
+npm run migration:run
+```
+
 ### Database inspection:
 
 ```sh

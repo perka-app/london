@@ -24,7 +24,7 @@ import { S3Module } from './s3/s3.module';
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
-        synchronize: configService.get<string>('ENVIRONMENT') === 'dev',
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),
