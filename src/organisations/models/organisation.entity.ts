@@ -1,8 +1,8 @@
 import { randomUUID, UUID } from 'crypto';
-import { OrganisationDTO } from './organisation.dto';
+import { CreateOrganisationDTO } from './organisation.dto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
-import { comparePassword, hashPassword } from 'src/common/bcryptHelper';
+import { hashPassword } from 'src/common/bcryptHelper';
 
 @Entity()
 export class Organisation {
@@ -31,7 +31,7 @@ export class Organisation {
     this.password = await hashPassword(this.password);
   }
 
-  constructor(clientDTO?: OrganisationDTO) {
+  constructor(clientDTO?: CreateOrganisationDTO) {
     if (clientDTO) {
       this.organisationId = randomUUID();
       this.name = clientDTO.name;

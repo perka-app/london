@@ -6,8 +6,9 @@ import {
   Validate,
 } from 'class-validator';
 import { IsUserNameValid } from './organisation.validator';
+import { Organisation } from './organisation.entity';
 
-export class OrganisationDTO {
+export class CreateOrganisationDTO {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -31,12 +32,16 @@ export class OrganisationDTO {
   avatarUrl: string;
 }
 
-export class ClientsCountDTO {
-  organisationId: string;
-  clientsCount: number;
+export class OrganisationDTO {
+  name: string;
+  login: string;
+  description: string;
+  avatarUrl: string;
 
-  constructor(organisationId: string, count: number) {
-    this.organisationId = organisationId;
-    this.clientsCount = count;
+  constructor(organisation: Organisation) {
+    this.name = organisation.name;
+    this.login = organisation.login;
+    this.description = organisation.description;
+    this.avatarUrl = organisation.avatarUrl;
   }
 }

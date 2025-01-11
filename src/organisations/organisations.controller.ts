@@ -13,23 +13,22 @@ import {
 } from '@nestjs/common';
 import { OrganisationsService } from './organisations.service';
 import { UUID } from 'crypto';
-import { ClientsCountDTO, OrganisationDTO } from './models/organisation.dto';
+import {
+  CreateOrganisationDTO,
+  OrganisationDTO,
+} from './models/organisation.dto';
 import { Organisation } from './models/organisation.entity';
-import { MembershipsService } from 'src/memberships/memberships.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('organisations')
 export class OrganisationsController {
-  constructor(
-    private readonly organisationsService: OrganisationsService,
-    private readonly membershipsService: MembershipsService,
-  ) {}
+  constructor(private readonly organisationsService: OrganisationsService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createOrganisation(
-    @Body() organisationDTO: OrganisationDTO,
+    @Body() organisationDTO: CreateOrganisationDTO,
   ): Promise<void> {
     try {
       const organisation = new Organisation(organisationDTO);
@@ -57,6 +56,23 @@ export class OrganisationsController {
       );
 
       return { url: imageUrl };
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/data')
+  async getOrganisationData(
+    @Headers('id') organisationId: UUID,
+  ): Promise<OrganisationDTO> {
+    try {
+      const organisationData =
+        await this.organisationsService.getOrganisationData(organisationId);
+
+      return organisationData;
     } catch (err) {
       if (err instanceof HttpException) throw err;
 

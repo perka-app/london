@@ -1,18 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { UUID } from 'crypto';
 import { Organisation } from './models/organisation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Membership } from '../memberships/memberships.entity';
-import { MembershipsService } from 'src/memberships/memberships.service';
 import { S3Service } from 'src/s3/s3.service';
+import { OrganisationDTO } from './models/organisation.dto';
 
 @Injectable()
 export class OrganisationsService {
   constructor(
     @InjectRepository(Organisation)
     private organisationsRepository: Repository<Organisation>,
-    private readonly membershipsService: MembershipsService,
     private readonly S3Service: S3Service,
   ) {}
 
@@ -33,6 +31,21 @@ export class OrganisationsService {
     }
 
     return organisation.name;
+  }
+
+  async getOrganisationData(organisationId: UUID): Promise<OrganisationDTO> {
+    const organisation = await this.organisationsRepository.findOneBy({
+      organisationId,
+    });
+
+    if (!organisation) {
+      throw new HttpException(
+        `Organisation by id ${organisationId} not found`,
+        404,
+      );
+    }
+
+    return new OrganisationDTO(organisation);
   }
 
   async getOrganisationByCredentials(
