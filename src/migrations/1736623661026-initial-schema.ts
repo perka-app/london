@@ -5,12 +5,12 @@ export class InitialSchema1736623661026 implements MigrationInterface {
     // Enable uuid-ossp extension
     await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
 
-    // Create clients table if it doesn't exist
-    const clientsTableExists = await queryRunner.hasTable('clients');
-    if (!clientsTableExists) {
+    // Create client table if it doesn't exist
+    const clientTableExists = await queryRunner.hasTable('client');
+    if (!clientTableExists) {
       await queryRunner.createTable(
         new Table({
-          name: 'clients',
+          name: 'client',
           columns: [
             {
               name: 'clientId',
@@ -35,14 +35,12 @@ export class InitialSchema1736623661026 implements MigrationInterface {
       );
     }
 
-    // Create organisations table if it doesn't exist
-    const organisationsTableExists = await queryRunner.hasTable(
-      'organisations',
-    );
-    if (!organisationsTableExists) {
+    // Create organisation table if it doesn't exist
+    const organisationTableExists = await queryRunner.hasTable('organisation');
+    if (!organisationTableExists) {
       await queryRunner.createTable(
         new Table({
-          name: 'organisations',
+          name: 'organisation',
           columns: [
             {
               name: 'organisationId',
@@ -84,12 +82,12 @@ export class InitialSchema1736623661026 implements MigrationInterface {
       );
     }
 
-    // Create emails table if it doesn't exist
-    const emailsTableExists = await queryRunner.hasTable('emails');
-    if (!emailsTableExists) {
+    // Create email table if it doesn't exist
+    const emailTableExists = await queryRunner.hasTable('email');
+    if (!emailTableExists) {
       await queryRunner.createTable(
         new Table({
-          name: 'emails',
+          name: 'email',
           columns: [
             {
               name: 'emailId',
@@ -128,12 +126,12 @@ export class InitialSchema1736623661026 implements MigrationInterface {
       );
     }
 
-    // Create memberships table if it doesn't exist
-    const membershipsTableExists = await queryRunner.hasTable('memberships');
-    if (!membershipsTableExists) {
+    // Create membership table if it doesn't exist
+    const membershipTableExists = await queryRunner.hasTable('membership');
+    if (!membershipTableExists) {
       await queryRunner.createTable(
         new Table({
-          name: 'memberships',
+          name: 'membership',
           columns: [
             {
               name: 'membershipId',
@@ -159,9 +157,9 @@ export class InitialSchema1736623661026 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('memberships', true);
-    await queryRunner.dropTable('emails', true);
-    await queryRunner.dropTable('organisations', true);
-    await queryRunner.dropTable('clients', true);
+    await queryRunner.dropTable('membership', true);
+    await queryRunner.dropTable('email', true);
+    await queryRunner.dropTable('organisation', true);
+    await queryRunner.dropTable('client', true);
   }
 }

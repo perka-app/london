@@ -9,7 +9,7 @@ export class Organisation {
   @PrimaryColumn({ nullable: false })
   organisationId: UUID;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   @IsNotEmpty()
   name: string;
 

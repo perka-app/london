@@ -48,13 +48,9 @@ export class OrganisationsService {
     return new OrganisationDTO(organisation);
   }
 
-  async getOrganisationByCredentials(
-    login: string,
-    password: string,
-  ): Promise<Organisation | null> {
+  async getOrganisationByLogin(login: string): Promise<Organisation | null> {
     const organisation = await this.organisationsRepository.findOneBy({
       login,
-      password,
     });
 
     return organisation;

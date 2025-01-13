@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { OrganisationsService } from 'src/organisations/organisations.service';
 import { JwtPayload } from './models/jwtPayload';
+import { comparePassword } from 'src/common/bcryptHelper';
 
 @Injectable()
 export class AuthService {
@@ -11,13 +12,14 @@ export class AuthService {
   ) {}
 
   async signInOrganisation(login: string, password: string): Promise<string> {
-    const organisation =
-      await this.organisationsService.getOrganisationByCredentials(
-        login,
-        password,
-      );
+    const organisation = await this.organisationsService.getOrganisationByLogin(
+      login,
+    );
+    const match = !!(
+      organisation && (await comparePassword(password, organisation.password))
+    );
 
-    if (!organisation) {
+    if (!match) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
