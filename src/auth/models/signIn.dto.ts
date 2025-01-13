@@ -5,7 +5,7 @@ export class SignInDTO {
   @IsString()
   @IsNotEmpty()
   @Validate(IsUserNameValid)
-  userName: string;
+  login: string;
 
   @IsString()
   @IsNotEmpty()

@@ -1,7 +1,7 @@
 import { randomUUID, UUID } from 'crypto';
 import { CreateOrganisationDTO } from './organisation.dto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 import { hashPassword } from 'src/common/bcryptHelper';
 
 @Entity()
@@ -21,6 +21,11 @@ export class Organisation {
   @IsNotEmpty()
   password: string;
 
+  @Column({ nullable: false })
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
   @Column({ nullable: true, length: 150 })
   description: string;
 
@@ -36,6 +41,7 @@ export class Organisation {
       this.organisationId = randomUUID();
       this.name = clientDTO.name;
       this.login = clientDTO.login;
+      this.email = clientDTO.email;
       this.password = clientDTO.password;
       this.description = clientDTO.description;
     }

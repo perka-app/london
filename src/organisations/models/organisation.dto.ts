@@ -1,4 +1,5 @@
 import {
+  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -18,6 +19,10 @@ export class CreateOrganisationDTO {
   @Validate(IsUserNameValid)
   login: string;
 
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
   @IsString()
   @IsNotEmpty()
   password: string;
@@ -35,12 +40,14 @@ export class CreateOrganisationDTO {
 export class OrganisationDTO {
   name: string;
   login: string;
+  email: string;
   description: string;
   avatarUrl: string;
 
   constructor(organisation: Organisation) {
     this.name = organisation.name;
     this.login = organisation.login;
+    this.email = organisation.email;
     this.description = organisation.description;
     this.avatarUrl = organisation.avatarUrl;
   }

@@ -24,7 +24,7 @@ export class AuthController {
     @Body() signInCredentials: SignInDTO,
   ): Promise<{ access_token: string }> {
     const access_token = await this.authService.signInOrganisation(
-      signInCredentials.userName,
+      signInCredentials.login,
       signInCredentials.password,
     );
 
