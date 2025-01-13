@@ -2,7 +2,7 @@ import { IsNotEmpty } from 'class-validator';
 import { randomUUID, UUID } from 'crypto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity()
+@Entity('memberships')
 export class Membership {
   @PrimaryColumn()
   membershipId: UUID;

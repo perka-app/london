@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
 import { SendEmailDTO } from './email.dto';
 
-@Entity()
+@Entity('emails')
 export class Email {
   @PrimaryColumn({ nullable: false })
   emailId: UUID;

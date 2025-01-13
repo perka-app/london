@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
 import { hashPassword } from 'src/common/bcryptHelper';
 
-@Entity()
+@Entity('organisations')
 export class Organisation {
   @PrimaryColumn({ nullable: false })
   organisationId: UUID;

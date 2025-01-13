@@ -4,7 +4,7 @@ import { ClientDTO } from './client.dto';
 import { IsNotEmpty } from 'class-validator';
 import { aesEncrypt } from 'src/common/aesHelper';
 
-@Entity()
+@Entity('clients')
 export class Client {
   @PrimaryColumn({ nullable: false })
   clientId: UUID;
