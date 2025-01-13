@@ -105,3 +105,7 @@ npm run migration:run
 ```sh
 docker exec -it postgres_db psql -U root -d postgres_db
 ```
+
+### Swagger UI:
+
+http://localhost:3000/api#/

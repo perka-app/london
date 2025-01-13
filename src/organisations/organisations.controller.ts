@@ -20,11 +20,25 @@ import {
 import { Organisation } from './models/organisation.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 @Controller('organisations')
 export class OrganisationsController {
   constructor(private readonly organisationsService: OrganisationsService) {}
 
+  @ApiOperation({
+    summary: 'Create new organisation',
+  })
+  @ApiCreatedResponse({ description: 'Organisation created' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createOrganisation(
@@ -41,10 +55,35 @@ export class OrganisationsController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Upload organisation avatar',
+    description:
+      'Uploads an avatar for the organisation or replaces the existing one',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Organisation id will be taken from JWT token',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Upload avatar',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Avatar uploaded' })
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
   @Post('/avatar')
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
     @Headers('id') organisationId: UUID,
     @UploadedFile() file: Express.Multer.File,
@@ -63,6 +102,17 @@ export class OrganisationsController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Get organisation data',
+    description: 'Returns information about the organisation',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Organisation id will be taken from JWT token',
+  })
+  @ApiOkResponse({ type: OrganisationDTO })
   @UseGuards(AuthGuard)
   @Get('/data')
   async getOrganisationData(
