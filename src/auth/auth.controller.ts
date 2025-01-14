@@ -6,18 +6,32 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDTO } from './models/signIn.dto';
 import { AuthGuard } from './auth.guard';
 import { UUID } from 'crypto';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({
+    summary: 'Get access token using credentials',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Organisation id will be taken from JWT token',
+  })
   @Post('organisation')
   @HttpCode(HttpStatus.OK)
   async signInOrganisation(
@@ -31,6 +45,27 @@ export class AuthController {
     return { access_token };
   }
 
+  @ApiOperation({
+    summary: 'Get id from access token',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Organisation id will be taken from JWT token',
+  })
+  @ApiOkResponse({
+    description: 'Id extracted from token',
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          example: 'some token',
+        },
+      },
+    },
+  })
   @UseGuards(AuthGuard)
   @Get()
   getProfile(@Headers('id') id: UUID): { id: string } {
