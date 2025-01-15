@@ -6,7 +6,6 @@ import {
   MaxLength,
   Validate,
 } from 'class-validator';
-import { IsUserNameValid } from './organisation.validator';
 import { Organisation } from './organisation.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -27,7 +26,6 @@ export class CreateOrganisationDTO {
   })
   @IsString()
   @IsNotEmpty()
-  @Validate(IsUserNameValid)
   login: string;
 
   @ApiProperty({

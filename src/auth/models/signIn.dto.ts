@@ -1,12 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Validate } from 'class-validator';
-import { IsUserNameValid } from 'src/organisations/models/organisation.validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class SignInDTO {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @Validate(IsUserNameValid)
   login: string;
 
   @ApiProperty()
