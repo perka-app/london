@@ -12,6 +12,11 @@ import { UUID } from 'crypto';
 import { ClientsService } from 'src/clients/clients.service';
 import { OrganisationsService } from 'src/organisations/organisations.service';
 import { MembershipsService } from './memberships.service';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 @Controller('memberships')
 export class MembershipsController {
@@ -21,6 +26,10 @@ export class MembershipsController {
     private readonly membershipsService: MembershipsService,
   ) {}
 
+  @ApiOperation({
+    summary: 'Create new membership',
+  })
+  @ApiCreatedResponse({ description: 'Membership created successfully' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createMembership(
@@ -51,6 +60,10 @@ export class MembershipsController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Delete membership',
+  })
+  @ApiNoContentResponse({ description: 'Membership deleted successfully' })
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async endMembership(

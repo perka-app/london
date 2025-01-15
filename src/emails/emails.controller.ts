@@ -17,6 +17,12 @@ import { MembershipsService } from 'src/memberships/memberships.service';
 import { UUID } from 'crypto';
 import { ClientsService } from 'src/clients/clients.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 @Controller('emails')
 export class EmailsController {
@@ -26,6 +32,20 @@ export class EmailsController {
     private readonly membershipsService: MembershipsService,
   ) {}
 
+  @ApiOperation({
+    summary: 'Sent email',
+    description: 'Provided email will be sent to all organisation members',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Id will be taken from JWT token (no need to provide it)',
+  })
+  @ApiCreatedResponse({
+    description: 'Email sent successfully',
+    type: EmailStatus,
+  })
   @UseGuards(AuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)

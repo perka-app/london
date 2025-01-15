@@ -9,11 +9,16 @@ import {
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { ClientDTO } from './models/client.dto';
+import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
 
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
+  @ApiOperation({
+    summary: 'Create new client',
+  })
+  @ApiCreatedResponse({ description: 'Client record created successfully' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createClient(@Body() createClientDTO: ClientDTO): Promise<string> {

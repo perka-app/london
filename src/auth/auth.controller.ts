@@ -30,7 +30,7 @@ export class AuthController {
   @ApiHeader({
     name: 'id',
     required: false,
-    description: 'Organisation id will be taken from JWT token',
+    description: 'Id will be taken from JWT token (no need to provide it)',
   })
   @Post('organisation')
   @HttpCode(HttpStatus.OK)
@@ -52,7 +52,7 @@ export class AuthController {
   @ApiHeader({
     name: 'id',
     required: false,
-    description: 'Organisation id will be taken from JWT token',
+    description: 'Id will be taken from JWT token (no need to provide it)',
   })
   @ApiOkResponse({
     description: 'Id extracted from token',

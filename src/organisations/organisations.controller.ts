@@ -64,7 +64,7 @@ export class OrganisationsController {
   @ApiHeader({
     name: 'id',
     required: false,
-    description: 'Organisation id will be taken from JWT token',
+    description: 'Id will be taken from JWT token (no need to provide it)',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -110,7 +110,7 @@ export class OrganisationsController {
   @ApiHeader({
     name: 'id',
     required: false,
-    description: 'Organisation id will be taken from JWT token',
+    description: 'Id will be taken from JWT token (no need to provide it)',
   })
   @ApiOkResponse({ type: OrganisationDTO })
   @UseGuards(AuthGuard)
