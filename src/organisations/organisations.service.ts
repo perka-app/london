@@ -21,6 +21,14 @@ export class OrganisationsService {
   }
 
   // Information exposing
+  async organisationExists(organisationId: UUID): Promise<boolean> {
+    const organisation = await this.organisationsRepository.findOneBy({
+      organisationId,
+    });
+
+    return !!organisation;
+  }
+
   async getName(organisationId: UUID): Promise<string> {
     const organisation = await this.organisationsRepository.findOneBy({
       organisationId: organisationId,
