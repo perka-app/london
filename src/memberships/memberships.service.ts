@@ -3,6 +3,7 @@ import { Membership } from './memberships.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { UUID } from 'crypto';
+import { ClientRecord } from 'src/organisations/models/organisation.dto';
 
 @Injectable()
 export class MembershipsService {
@@ -54,5 +55,15 @@ export class MembershipsService {
     const memberships = await this.membershipsRepository.findBy(where);
 
     return memberships.map((membership) => membership.clientId);
+  }
+
+  async getClientsRecords(organisationId: UUID): Promise<ClientRecord[]> {
+    const query = `SELECT "joinedAt" FROM "membership" WHERE "organisationId" = '${organisationId}'`;
+
+    const result = (await this.membershipsRepository.query(
+      query,
+    )) as ClientRecord[];
+
+    return result;
   }
 }

@@ -156,6 +156,11 @@ export class InitialSchema1736623661026 implements MigrationInterface {
               type: 'uuid',
               isNullable: false,
             },
+            {
+              name: 'joinedAt',
+              type: 'timestamp',
+              isNullable: false,
+            },
           ],
         }),
       );

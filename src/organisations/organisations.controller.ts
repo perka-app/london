@@ -16,6 +16,7 @@ import { UUID } from 'crypto';
 import {
   CreateOrganisationDTO,
   OrganisationDTO,
+  OrganisationStatistics,
 } from './models/organisation.dto';
 import { Organisation } from './models/organisation.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -115,14 +116,42 @@ export class OrganisationsController {
   @ApiOkResponse({ type: OrganisationDTO })
   @UseGuards(AuthGuard)
   @Get('/data')
-  async getOrganisationData(
-    @Headers('id') organisationId: UUID,
-  ): Promise<OrganisationDTO> {
+  async getData(@Headers('id') organisationId: UUID): Promise<OrganisationDTO> {
     try {
       const organisationData =
         await this.organisationsService.getOrganisationData(organisationId);
 
       return organisationData;
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Get organisation statistics',
+    description: 'Returns statistics about the organisation',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Id will be taken from JWT token (no need to provide it)',
+  })
+  @ApiOkResponse({ type: OrganisationStatistics })
+  @UseGuards(AuthGuard)
+  @Get('/statistics')
+  async getStatistics(
+    @Headers('id') organisationId: UUID,
+  ): Promise<OrganisationStatistics> {
+    try {
+      const statistics =
+        await this.organisationsService.getOrganisationStatistics(
+          organisationId,
+        );
+
+      return statistics;
     } catch (err) {
       if (err instanceof HttpException) throw err;
 

@@ -4,7 +4,6 @@ import {
   IsOptional,
   IsString,
   MaxLength,
-  Validate,
 } from 'class-validator';
 import { Organisation } from './organisation.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -90,5 +89,27 @@ export class OrganisationDTO {
     this.email = organisation.email;
     this.description = organisation.description;
     this.avatarUrl = organisation.avatarUrl;
+  }
+}
+
+export class ClientRecord {
+  @ApiProperty()
+  joinedAt: Date;
+}
+export class OrganisationStatistics {
+  @ApiProperty({
+    description: 'Total number of clients in the organisation',
+  })
+  clientsCount: number;
+
+  @ApiProperty({
+    description: 'Array of clients records',
+    type: [ClientRecord],
+  })
+  clientsRecords: ClientRecord[];
+
+  constructor(clientsCount: number, clientsRecords: ClientRecord[]) {
+    this.clientsCount = clientsCount;
+    this.clientsRecords = clientsRecords;
   }
 }

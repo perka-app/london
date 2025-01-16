@@ -15,9 +15,13 @@ export class Membership {
   @IsNotEmpty()
   organisationId: UUID;
 
+  @Column()
+  joinedAt: Date;
+
   constructor(clientId: UUID, organisationId: UUID) {
     this.membershipId = randomUUID();
     this.clientId = clientId;
     this.organisationId = organisationId;
+    this.joinedAt = new Date();
   }
 }

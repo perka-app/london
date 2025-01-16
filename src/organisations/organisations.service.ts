@@ -4,13 +4,18 @@ import { Organisation } from './models/organisation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { S3Service } from 'src/s3/s3.service';
-import { OrganisationDTO } from './models/organisation.dto';
+import {
+  OrganisationDTO,
+  OrganisationStatistics,
+} from './models/organisation.dto';
+import { MembershipsService } from 'src/memberships/memberships.service';
 
 @Injectable()
 export class OrganisationsService {
   constructor(
     @InjectRepository(Organisation)
-    private organisationsRepository: Repository<Organisation>,
+    private readonly organisationsRepository: Repository<Organisation>,
+    private readonly membershipsService: MembershipsService,
     private readonly S3Service: S3Service,
   ) {}
 
@@ -42,16 +47,9 @@ export class OrganisationsService {
   }
 
   async getOrganisationData(organisationId: UUID): Promise<OrganisationDTO> {
-    const organisation = await this.organisationsRepository.findOneBy({
+    const organisation = (await this.organisationsRepository.findOneBy({
       organisationId,
-    });
-
-    if (!organisation) {
-      throw new HttpException(
-        `Organisation by id ${organisationId} not found`,
-        404,
-      );
-    }
+    })) as Organisation;
 
     return new OrganisationDTO(organisation);
   }
@@ -62,6 +60,17 @@ export class OrganisationsService {
     });
 
     return organisation;
+  }
+
+  async getOrganisationStatistics(
+    organisationId: UUID,
+  ): Promise<OrganisationStatistics> {
+    const joinedRecords = await this.membershipsService.getClientsRecords(
+      organisationId,
+    );
+    const clientsCount = joinedRecords.length;
+
+    return new OrganisationStatistics(clientsCount, joinedRecords);
   }
 
   // Editing information
