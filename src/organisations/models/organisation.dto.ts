@@ -21,7 +21,7 @@ export class CreateOrganisationDTO {
   @ApiProperty({
     description: 'Must be unique',
     type: String,
-    example: 'my_test_organisation',
+    example: 'admin',
   })
   @IsString()
   @IsNotEmpty()
@@ -38,7 +38,7 @@ export class CreateOrganisationDTO {
 
   @ApiProperty({
     type: String,
-    example: 'strongpassword123',
+    example: 'password',
   })
   @IsString()
   @IsNotEmpty()
