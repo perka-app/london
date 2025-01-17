@@ -46,7 +46,10 @@ export class S3Service {
         throw Error('Image not saved to S3 bucket.');
       }
     } catch (err) {
-      this.logger.error('Cannot save file to S3', err);
+      this.logger.error(
+        `Cannot save file to S3: ${JSON.stringify(input)}`,
+        err,
+      );
       throw err;
     }
   }

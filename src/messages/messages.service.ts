@@ -82,7 +82,10 @@ export class MessagesService {
         message,
       )
       .catch((err) => {
-        this.logger.error('Failed to send message', err);
+        this.logger.error(
+          `Failed to send message: ${JSON.stringify(message)}`,
+          err,
+        );
         throw new Error(err.details);
       });
   }
