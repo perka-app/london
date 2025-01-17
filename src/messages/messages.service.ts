@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Email } from './models/email.entity';
 import { Client } from 'src/clients/models/client.entity';
 import { OrganisationsService } from 'src/organisations/organisations.service';
 import * as FormData from 'form-data';
@@ -10,17 +9,18 @@ import Mailgun, { MailgunMessageData } from 'mailgun.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IMailgunClient } from 'mailgun.js/Interfaces';
+import { Message } from './models/message.entity';
 
 @Injectable()
-export class EmailsService {
+export class MessagesService {
   private mailgunClient: IMailgunClient;
-  private emailFooter: string;
+  private messageFooter: string;
   private fromAddress: string;
-  private logger = new Logger('EmailsService');
+  private logger = new Logger('MessagesService');
 
   constructor(
-    @InjectRepository(Email)
-    private emailsRepository: Repository<Email>,
+    @InjectRepository(Message)
+    private messagesRepository: Repository<Message>,
     private configService: ConfigService,
     private organisationsService: OrganisationsService,
   ) {
@@ -37,45 +37,52 @@ export class EmailsService {
     );
     const textTemplatesContent = fs.readFileSync(textTemplatesPath, 'utf8');
     const textTemplates = JSON.parse(textTemplatesContent);
-    this.emailFooter = textTemplates.footer;
+    this.messageFooter = textTemplates.footer;
     this.fromAddress = textTemplates.from;
   }
 
-  async sendEmail(email: Email, recivers: Client[]): Promise<Email> {
+  async sendMessage(message: Message, recivers: Client[]): Promise<Message> {
+    await this.sendEmail(message, recivers);
+
+    message.sentAt = new Date();
+    message.reciversCount = recivers.length;
+    await this.messagesRepository.save(message);
+
+    return message;
+  }
+
+  private async sendEmail(message: Message, recivers: Client[]): Promise<void> {
     const organisationName = await this.organisationsService.getName(
-      email.organisationId,
+      message.organisationId,
     );
 
     const from = `${organisationName} <${this.fromAddress}>`;
 
     for (const reciver of recivers) {
       reciver.decryptSensitiveData();
-      const emailText =
-        email.text + this.emailFooter.replace('{{email}}', reciver.email);
+      const messageText =
+        message.text + this.messageFooter.replace('{{message}}', reciver.email);
 
-      const emailData = {
+      const messageData = {
         to: reciver.email,
         from,
-        subject: email.subject,
-        text: email.text,
-        html: emailText,
+        subject: message.subject,
+        text: message.text,
+        html: messageText,
       };
 
-      await this.send(emailData);
+      await this.send(messageData);
     }
-
-    email.sentAt = new Date();
-    email.reciversCount = recivers.length;
-    await this.emailsRepository.save(email);
-
-    return email;
   }
 
-  private async send(email: MailgunMessageData): Promise<void> {
+  private async send(message: MailgunMessageData): Promise<void> {
     await this.mailgunClient.messages
-      .create(this.configService.get<string>('MAILGUN_DOMAIN') as string, email)
+      .create(
+        this.configService.get<string>('MAILGUN_DOMAIN') as string,
+        message,
+      )
       .catch((err) => {
-        this.logger.error('Failed to send email', err);
+        this.logger.error('Failed to send message', err);
         throw new Error(err.details);
       });
   }

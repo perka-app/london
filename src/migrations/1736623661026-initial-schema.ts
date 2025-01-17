@@ -83,10 +83,10 @@ export class InitialSchema1736623661026 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
-        name: 'email',
+        name: 'message',
         columns: [
           {
-            name: 'emailId',
+            name: 'messageId',
             type: 'uuid',
             isPrimary: true,
             isNullable: false,
@@ -167,11 +167,18 @@ export class InitialSchema1736623661026 implements MigrationInterface {
         `INSERT INTO membership ("membershipId", "clientId", "organisationId", "joinedAt") VALUES ('${randomUUID()}', '${clientId}', '${organisationId}', NOW())`,
       );
     }
+
+    // Insert initial dummy messages
+    for (let i = 1; i <= 5; i++) {
+      await queryRunner.query(
+        `INSERT INTO message ("messageId", "organisationId", "subject", "text", "sentAt", "reciversCount") VALUES ('${randomUUID()}', '${organisationId}', 'This is dummy title ${i}', 'This is dummy message ${i}', NOW(), 10)`,
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropTable('membership', true);
-    await queryRunner.dropTable('email', true);
+    await queryRunner.dropTable('message', true);
     await queryRunner.dropTable('organisation', true);
     await queryRunner.dropTable('client', true);
   }

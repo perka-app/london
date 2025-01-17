@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { EmailsService } from './emails.service';
+import { MessagesService } from './messages.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Email } from './models/email.entity';
-import { EmailsController } from './emails.controller';
+import { Message } from './models/message.entity';
+import { MessagesController } from './messages.controller';
 import { ClientsModule } from 'src/clients/clients.module';
 import { MembershipsModule } from 'src/memberships/memberships.module';
 import { OrganisationsModule } from 'src/organisations/organisations.module';
@@ -10,15 +10,15 @@ import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Email]),
-    EmailsModule,
+    TypeOrmModule.forFeature([Message]),
+    MessagesModule,
     ClientsModule,
     MembershipsModule,
     OrganisationsModule,
     JwtModule,
   ],
-  providers: [EmailsService],
-  exports: [EmailsService],
-  controllers: [EmailsController],
+  providers: [MessagesService],
+  exports: [MessagesService],
+  controllers: [MessagesController],
 })
-export class EmailsModule {}
+export class MessagesModule {}

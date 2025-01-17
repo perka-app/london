@@ -5,14 +5,9 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
-  ParseUUIDPipe,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
-import { EmailsService } from './emails.service';
-import { EmailStatus, SendEmailDTO } from './models/email.dto';
-import { Email } from './models/email.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { UUID } from 'crypto';
 import { ClientsService } from 'src/clients/clients.service';
@@ -23,18 +18,21 @@ import {
   ApiHeader,
   ApiOperation,
 } from '@nestjs/swagger';
+import { MessageStatus, SendMessageDTO } from './models/message.dto';
+import { Message } from './models/message.entity';
+import { MessagesService } from './messages.service';
 
-@Controller('emails')
-export class EmailsController {
+@Controller('messages')
+export class MessagesController {
   constructor(
-    private readonly emailsService: EmailsService,
+    private readonly messageService: MessagesService,
     private readonly clientsService: ClientsService,
     private readonly membershipsService: MembershipsService,
   ) {}
 
   @ApiOperation({
-    summary: 'Sent email',
-    description: 'Provided email will be sent to all organisation members',
+    summary: 'Sent message',
+    description: 'Provided message will be sent to all organisation members',
   })
   @ApiBearerAuth()
   @ApiHeader({
@@ -43,18 +41,18 @@ export class EmailsController {
     description: 'Id will be taken from JWT token (no need to provide it)',
   })
   @ApiCreatedResponse({
-    description: 'Email sent successfully',
-    type: EmailStatus,
+    description: 'Message sent successfully',
+    type: MessageStatus,
   })
   @UseGuards(AuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async sendEmail(
+  async sendMessage(
     @Headers('id') organisationId: UUID,
-    @Body() emailRequest: SendEmailDTO,
-  ): Promise<EmailStatus> {
+    @Body() messageRequest: SendMessageDTO,
+  ): Promise<MessageStatus> {
     try {
-      const email = new Email(emailRequest, organisationId);
+      const message = new Message(messageRequest, organisationId);
 
       const reciversUUID = await this.membershipsService
         .getClientsId(organisationId)
@@ -74,16 +72,16 @@ export class EmailsController {
           );
         });
 
-      const confirmedEmail = await this.emailsService
-        .sendEmail(email, recivers)
+      const confirmedMessage = await this.messageService
+        .sendMessage(message, recivers)
         .catch((err) => {
           throw new HttpException(
-            'Unable to send email: ' + err.message,
+            'Unable to send message: ' + err.message,
             HttpStatus.INTERNAL_SERVER_ERROR,
           );
         });
 
-      return new EmailStatus(confirmedEmail);
+      return new MessageStatus(confirmedMessage);
     } catch (err) {
       if (err instanceof HttpException) throw err;
 

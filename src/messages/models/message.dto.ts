@@ -1,10 +1,10 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Email } from './email.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Message } from './message.entity';
 
-export class SendEmailDTO {
+export class SendMessageDTO {
   @ApiProperty({
-    description: 'Subject of the email',
+    description: 'Subject of the message',
     type: String,
     example: 'Welcome to our platform',
   })
@@ -13,7 +13,7 @@ export class SendEmailDTO {
   subject: string;
 
   @ApiProperty({
-    description: 'Text / HTML of the email',
+    description: 'Text / HTML of the message',
     type: String,
     example: 'Hello, welcome to our platform! We are happy to have you here.',
   })
@@ -22,23 +22,23 @@ export class SendEmailDTO {
   text: string;
 }
 
-export class EmailStatus {
+export class MessageStatus {
   @ApiProperty({
-    description: 'Date and time when the email was sent',
+    description: 'Date and time when the message was sent',
     type: Date,
     example: '2021-01-01T12:00:00.000Z',
   })
   sentAt: Date;
 
   @ApiProperty({
-    description: 'Number of email recivers',
+    description: 'Number of message recivers',
     type: Number,
     example: 10,
   })
   reciversCount: number;
 
-  constructor(email: Email) {
-    this.sentAt = email.sentAt;
-    this.reciversCount = email.reciversCount;
+  constructor(message: Message) {
+    this.sentAt = message.sentAt;
+    this.reciversCount = message.reciversCount;
   }
 }

@@ -1,12 +1,12 @@
 import { randomUUID, UUID } from 'crypto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
-import { SendEmailDTO } from './email.dto';
+import { SendMessageDTO } from './message.dto';
 
 @Entity()
-export class Email {
+export class Message {
   @PrimaryColumn({ nullable: false })
-  emailId: UUID;
+  messageId: UUID;
 
   @Column()
   @IsNotEmpty()
@@ -28,12 +28,12 @@ export class Email {
   @IsNotEmpty()
   reciversCount: number;
 
-  constructor(emailDTO?: SendEmailDTO, organisationId?: UUID) {
-    if (emailDTO && organisationId) {
-      this.emailId = randomUUID();
+  constructor(messageDTO?: SendMessageDTO, organisationId?: UUID) {
+    if (messageDTO && organisationId) {
+      this.messageId = randomUUID();
       this.organisationId = organisationId;
-      this.text = emailDTO.text;
-      this.subject = emailDTO.subject;
+      this.text = messageDTO.text;
+      this.subject = messageDTO.subject;
     }
   }
 }

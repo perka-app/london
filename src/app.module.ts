@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule } from './clients/clients.module';
 import { OrganisationsModule } from './organisations/organisations.module';
 import { MembershipsModule } from './memberships/memberships.module';
-import { EmailsModule } from './emails/emails.module';
+import { MessagesModule } from './messages/messages.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { S3Module } from './s3/s3.module';
@@ -31,7 +31,7 @@ import { S3Module } from './s3/s3.module';
     ClientsModule,
     OrganisationsModule,
     MembershipsModule,
-    EmailsModule,
+    MessagesModule,
     AuthModule,
     S3Module,
   ],
