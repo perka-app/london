@@ -9,6 +9,6 @@ export class AppController {
   @ApiOkResponse({ description: 'API is up and running' })
   @Get()
   statusCheck(): string {
-    return 'API is running';
+    return 'API is running!';
   }
 }
