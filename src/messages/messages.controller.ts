@@ -8,9 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { MembershipsService } from 'src/memberships/memberships.service';
 import { UUID } from 'crypto';
-import { ClientsService } from 'src/clients/clients.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import {
   ApiBearerAuth,
@@ -21,13 +19,13 @@ import {
 import { MessageStatus, SendMessageDTO } from './models/message.dto';
 import { Message } from './models/message.entity';
 import { MessagesService } from './messages.service';
+import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Controller('messages')
 export class MessagesController {
   constructor(
     private readonly messageService: MessagesService,
-    private readonly clientsService: ClientsService,
-    private readonly membershipsService: MembershipsService,
+    private readonly subscribersServece: SubscribersService,
   ) {}
 
   @ApiOperation({
@@ -54,17 +52,8 @@ export class MessagesController {
     try {
       const message = new Message(messageRequest, organisationId);
 
-      const reciversUUID = await this.membershipsService
-        .getClientsId(organisationId)
-        .catch((err) => {
-          throw new HttpException(
-            'Unable to get recivers UUID: ' + err.message,
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-        });
-
-      const recivers = await this.clientsService
-        .getClients(reciversUUID)
+      const recivers = await this.subscribersServece
+        .getSubscribersForOrganisation(organisationId)
         .catch((err) => {
           throw new HttpException(
             'Unable to get recivers: ' + err.message,

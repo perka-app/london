@@ -8,32 +8,6 @@ export class InitialSchema1736623661026 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
-        name: 'client',
-        columns: [
-          {
-            name: 'clientId',
-            type: 'uuid',
-            isPrimary: true,
-            isNullable: false,
-            default: 'uuid_generate_v4()',
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            isNullable: false,
-          },
-          {
-            name: 'email',
-            type: 'varchar',
-            isUnique: true,
-            isNullable: false,
-          },
-        ],
-      }),
-    );
-
-    await queryRunner.createTable(
-      new Table({
         name: 'organisation',
         columns: [
           {
@@ -123,19 +97,15 @@ export class InitialSchema1736623661026 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
-        name: 'membership',
+        name: 'subscriber',
         columns: [
           {
-            name: 'membershipId',
+            name: 'subscriberId',
             type: 'uuid',
             isPrimary: true,
-            isNullable: false,
+            isGenerated: false,
+            generationStrategy: 'uuid',
             default: 'uuid_generate_v4()',
-          },
-          {
-            name: 'clientId',
-            type: 'uuid',
-            isNullable: false,
           },
           {
             name: 'organisationId',
@@ -143,9 +113,20 @@ export class InitialSchema1736623661026 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'email',
+            type: 'varchar',
+            isNullable: false,
+          },
+          {
+            name: 'confirmed',
+            type: 'boolean',
+            isNullable: false,
+          },
+          {
             name: 'joinedAt',
             type: 'timestamp',
             isNullable: false,
+            default: 'now()',
           },
         ],
       }),
@@ -157,17 +138,6 @@ export class InitialSchema1736623661026 implements MigrationInterface {
       `INSERT INTO organisation ("organisationId", "name", "login", "email", "password", "description", "avatarUrl") VALUES ('${organisationId}', 'Dummy Organisation', 'dummy_org', 'dummy@organisation.com', 'dummy_password', 'This is a dummy organisation.', 'http://example.com/avatar.png')`,
     );
 
-    // Insert initial dummy clients and memberships
-    for (let i = 1; i <= 10; i++) {
-      const clientId = randomUUID();
-      await queryRunner.query(
-        `INSERT INTO client ("clientId", "name", "email") VALUES ('${clientId}', 'Dummy Client ${i}', 'dummy${i}@client.com')`,
-      );
-      await queryRunner.query(
-        `INSERT INTO membership ("membershipId", "clientId", "organisationId", "joinedAt") VALUES ('${randomUUID()}', '${clientId}', '${organisationId}', NOW())`,
-      );
-    }
-
     // Insert initial dummy messages
     for (let i = 1; i <= 5; i++) {
       await queryRunner.query(
@@ -177,9 +147,8 @@ export class InitialSchema1736623661026 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('membership', true);
+    await queryRunner.dropTable('subscriber', true);
     await queryRunner.dropTable('message', true);
     await queryRunner.dropTable('organisation', true);
-    await queryRunner.dropTable('client', true);
   }
 }

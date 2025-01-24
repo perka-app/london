@@ -12,9 +12,8 @@ export class AuthService {
   ) {}
 
   async signInOrganisation(login: string, password: string): Promise<string> {
-    const organisation = await this.organisationsService.getOrganisationByLogin(
-      login,
-    );
+    const organisation =
+      await this.organisationsService.getOrganisationByNickname(login);
     const match = !!(
       organisation && (await comparePassword(password, organisation.password))
     );

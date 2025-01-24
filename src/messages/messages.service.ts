@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Client } from 'src/clients/models/client.entity';
 import { OrganisationsService } from 'src/organisations/organisations.service';
 import * as FormData from 'form-data';
 import Mailgun, { MailgunMessageData } from 'mailgun.js';
@@ -10,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { IMailgunClient } from 'mailgun.js/Interfaces';
 import { Message } from './models/message.entity';
+import { Subscriber } from 'src/subscribers/models/subscriber.entity';
 
 @Injectable()
 export class MessagesService {
@@ -41,7 +41,10 @@ export class MessagesService {
     this.fromAddress = textTemplates.from;
   }
 
-  async sendMessage(message: Message, recivers: Client[]): Promise<Message> {
+  async sendMessage(
+    message: Message,
+    recivers: Subscriber[],
+  ): Promise<Message> {
     await this.sendEmail(message, recivers);
 
     message.sentAt = new Date();
@@ -51,7 +54,10 @@ export class MessagesService {
     return message;
   }
 
-  private async sendEmail(message: Message, recivers: Client[]): Promise<void> {
+  private async sendEmail(
+    message: Message,
+    recivers: Subscriber[],
+  ): Promise<void> {
     const organisationName = await this.organisationsService.getName(
       message.organisationId,
     );

@@ -1,10 +1,9 @@
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
-import { Client } from 'src/clients/models/client.entity';
 import { Message } from 'src/messages/models/message.entity';
-import { Membership } from 'src/memberships/memberships.entity';
 import { InitialSchema1736623661026 } from 'src/migrations/1736623661026-initial-schema';
 import { Organisation } from 'src/organisations/models/organisation.entity';
+import { Subscriber } from 'src/subscribers/models/subscriber.entity';
 import { DataSource } from 'typeorm';
 
 config();
@@ -18,6 +17,6 @@ export default new DataSource({
   username: configService.get<string>('DATABASE_USERNAME'),
   password: configService.get<string>('DATABASE_PASSWORD'),
   database: configService.get<string>('DATABASE_NAME'),
-  entities: [Client, Organisation, Membership, Message],
+  entities: [Organisation, Subscriber, Message],
   migrations: [InitialSchema1736623661026],
 });

@@ -7,6 +7,7 @@ import {
 } from 'class-validator';
 import { Organisation } from './organisation.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { SubscriberRecord } from 'src/subscribers/models/subscriber.entity';
 
 export class CreateOrganisationDTO {
   @ApiProperty({
@@ -92,10 +93,6 @@ export class OrganisationDTO {
   }
 }
 
-export class ClientRecord {
-  @ApiProperty()
-  joinedAt: Date;
-}
 export class OrganisationStatistics {
   @ApiProperty({
     description: 'Total number of clients in the organisation',
@@ -104,11 +101,11 @@ export class OrganisationStatistics {
 
   @ApiProperty({
     description: 'Array of clients records',
-    type: [ClientRecord],
+    type: [SubscriberRecord],
   })
-  clientsRecords: ClientRecord[];
+  clientsRecords: SubscriberRecord[];
 
-  constructor(clientsCount: number, clientsRecords: ClientRecord[]) {
+  constructor(clientsCount: number, clientsRecords: SubscriberRecord[]) {
     this.clientsCount = clientsCount;
     this.clientsRecords = clientsRecords;
   }

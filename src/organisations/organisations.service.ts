@@ -8,14 +8,14 @@ import {
   OrganisationDTO,
   OrganisationStatistics,
 } from './models/organisation.dto';
-import { MembershipsService } from 'src/memberships/memberships.service';
+import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Injectable()
 export class OrganisationsService {
   constructor(
     @InjectRepository(Organisation)
     private readonly organisationsRepository: Repository<Organisation>,
-    private readonly membershipsService: MembershipsService,
+    private readonly subscribersService: SubscribersService,
     private readonly S3Service: S3Service,
   ) {}
 
@@ -26,6 +26,18 @@ export class OrganisationsService {
   }
 
   // Information exposing
+  async getOrganisationByNickname(nickname: string): Promise<Organisation> {
+    const organisation = await this.organisationsRepository.findOneBy({
+      login: nickname,
+    });
+
+    if (!organisation) {
+      throw new HttpException(`Organisation '${nickname}' not found`, 404);
+    }
+
+    return organisation;
+  }
+
   async organisationExists(organisationId: UUID): Promise<boolean> {
     const organisation = await this.organisationsRepository.findOneBy({
       organisationId,
@@ -54,18 +66,10 @@ export class OrganisationsService {
     return new OrganisationDTO(organisation);
   }
 
-  async getOrganisationByLogin(login: string): Promise<Organisation | null> {
-    const organisation = await this.organisationsRepository.findOneBy({
-      login,
-    });
-
-    return organisation;
-  }
-
   async getOrganisationStatistics(
     organisationId: UUID,
   ): Promise<OrganisationStatistics> {
-    const joinedRecords = await this.membershipsService.getClientsRecords(
+    const joinedRecords = await this.subscribersService.getSubscribersRecords(
       organisationId,
     );
     const clientsCount = joinedRecords.length;
