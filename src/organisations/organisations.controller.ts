@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   UploadedFile,
   UseGuards,
@@ -16,6 +17,7 @@ import { UUID } from 'crypto';
 import {
   CreateOrganisationDTO,
   OrganisationDTO,
+  OrganisationInfo,
   OrganisationStatistics,
 } from './models/organisation.dto';
 import { Organisation } from './models/organisation.entity';
@@ -29,6 +31,7 @@ import {
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
 
@@ -152,6 +155,29 @@ export class OrganisationsController {
         );
 
       return statistics;
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Get organisation public info',
+    description: 'Returns publicly avalible information about the organisation',
+  })
+  @ApiParam({
+    name: 'nickname',
+    description: 'Organisation nickname',
+    example: 'dummy_org',
+  })
+  @ApiOkResponse({ type: OrganisationInfo })
+  @Get('/:nickname')
+  async getInfo(
+    @Param('nickname') nickname: string,
+  ): Promise<OrganisationInfo> {
+    try {
+      return await this.organisationsService.getOrganisationInfo(nickname);
     } catch (err) {
       if (err instanceof HttpException) throw err;
 

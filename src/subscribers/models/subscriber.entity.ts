@@ -30,11 +30,12 @@ export class Subscriber {
     this.email = aesEncrypt(this.email);
   }
 
-  constructor(email: string, organisationId: UUID) {
+  constructor(email: string, organisationId: UUID, confirmed: boolean = false) {
     this.subscriberId = randomUUID();
     this.email = email;
     this.organisationId = organisationId;
     this.joinedAt = new Date();
+    this.confirmed = confirmed;
   }
 }
 

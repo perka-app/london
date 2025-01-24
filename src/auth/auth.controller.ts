@@ -26,12 +26,6 @@ export class AuthController {
   @ApiOperation({
     summary: 'Get access token using credentials',
   })
-  @ApiBearerAuth()
-  @ApiHeader({
-    name: 'id',
-    required: false,
-    description: 'Id will be taken from JWT token (no need to provide it)',
-  })
   @Post('organisation')
   @HttpCode(HttpStatus.OK)
   async signInOrganisation(

@@ -35,6 +35,15 @@ export class SubscribersService {
   }
 
   // Information exposing
+  async isSubscribed(email: string, organisationId: UUID): Promise<boolean> {
+    const where: FindOptionsWhere<Subscriber> = {
+      email,
+      organisationId,
+    };
+
+    return !!(await this.subscribersRepository.findOneBy(where));
+  }
+
   async getSubscriberByEmail(
     email: string,
     organisationId: UUID,

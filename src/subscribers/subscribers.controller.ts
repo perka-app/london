@@ -13,6 +13,7 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOperation,
+  ApiParam,
 } from '@nestjs/swagger';
 import { SubscribersService } from './subscribers.service';
 import { AddSubscriberDTO } from './models/subscriber.dto';
@@ -26,6 +27,11 @@ export class SubscribersController {
 
   @ApiOperation({
     summary: 'Add subscriber to organisation',
+  })
+  @ApiParam({
+    name: 'organisationNickname',
+    description: 'Organisation nickname',
+    example: 'dummy_org',
   })
   @ApiCreatedResponse({ description: 'Subscriber added but not verified' })
   @Post('/:organisationNickname')
@@ -42,10 +48,13 @@ export class SubscribersController {
           organisationNickname,
         );
 
-      await this.subscribersService.getSubscriberByEmail(
+      const isSubscribed = await this.subscribersService.isSubscribed(
         subscriberEmail,
         organisationId,
       );
+      if (isSubscribed) {
+        throw new HttpException('Already subscribed', 404);
+      }
 
       await this.subscribersService.addSubscriber(
         addSubscriberDTO,

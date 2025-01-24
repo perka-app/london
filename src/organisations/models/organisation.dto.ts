@@ -110,3 +110,24 @@ export class OrganisationStatistics {
     this.clientsRecords = clientsRecords;
   }
 }
+
+export class OrganisationInfo {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  subscribersCount: number;
+
+  @ApiProperty()
+  avatarUrl: string;
+
+  constructor(organisation: Organisation, subscribersCount: number) {
+    this.name = organisation.name;
+    this.description = organisation.description;
+    this.avatarUrl = organisation.avatarUrl;
+    this.subscribersCount = subscribersCount;
+  }
+}

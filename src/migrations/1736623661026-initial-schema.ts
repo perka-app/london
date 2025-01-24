@@ -135,7 +135,7 @@ export class InitialSchema1736623661026 implements MigrationInterface {
     // Insert initial dummy organisation
     const organisationId = randomUUID();
     await queryRunner.query(
-      `INSERT INTO organisation ("organisationId", "name", "login", "email", "password", "description", "avatarUrl") VALUES ('${organisationId}', 'Dummy Organisation', 'dummy_org', 'dummy@organisation.com', 'dummy_password', 'This is a dummy organisation.', 'http://example.com/avatar.png')`,
+      `INSERT INTO organisation ("organisationId", "name", "login", "email", "password", "description", "avatarUrl") VALUES ('${organisationId}', 'Dummy Organisation', 'dummy_org', 'dummy@organisation.com', 'dummy_password', 'This is a dummy organisation.', 'https://perka-api-bucket.s3.eu-north-1.amazonaws.com/file1737753403855')`,
     );
 
     // Insert initial dummy messages

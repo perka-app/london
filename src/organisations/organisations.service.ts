@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { S3Service } from 'src/s3/s3.service';
 import {
   OrganisationDTO,
+  OrganisationInfo,
   OrganisationStatistics,
 } from './models/organisation.dto';
 import { SubscribersService } from 'src/subscribers/subscribers.service';
@@ -75,6 +76,15 @@ export class OrganisationsService {
     const clientsCount = joinedRecords.length;
 
     return new OrganisationStatistics(clientsCount, joinedRecords);
+  }
+
+  async getOrganisationInfo(nickname: string): Promise<OrganisationInfo> {
+    const organisation = await this.getOrganisationByNickname(nickname);
+    const clientsCount = await this.subscribersService.getSubscribersCount(
+      organisation.organisationId,
+    );
+
+    return new OrganisationInfo(organisation, clientsCount);
   }
 
   // Editing information
