@@ -128,7 +128,7 @@ export class OrganisationsController {
     example: 'dummy_org',
   })
   @ApiOkResponse({ type: OrganisationInfo })
-  @Get('/:nickname')
+  @Get('/info/:nickname')
   async getInfo(
     @Param('nickname') nickname: string,
   ): Promise<OrganisationInfo> {
