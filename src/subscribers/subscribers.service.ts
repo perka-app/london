@@ -72,7 +72,7 @@ export class SubscribersService {
   async getSubscribersRecords(
     organisationId: UUID,
   ): Promise<SubscriberRecord[]> {
-    const query = `SELECT "joinedAt" FROM "membership" WHERE "organisationId" = '${organisationId}' and "confirmed" = true`;
+    const query = `SELECT "joinedAt" FROM "subscriber" WHERE "organisationId" = '${organisationId}' and "confirmed" = true`;
 
     const result = (await this.subscribersRepository.query(
       query,
