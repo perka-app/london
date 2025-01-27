@@ -93,6 +93,13 @@ export class OrganisationDTO {
   }
 }
 
+export class EditOrganisationDTO {
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
+}
+
 export class OrganisationStatistics {
   @ApiProperty({
     description: 'Total number of clients in the organisation',

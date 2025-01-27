@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { S3Service } from 'src/s3/s3.service';
 import {
+  EditOrganisationDTO,
   OrganisationDTO,
   OrganisationInfo,
   OrganisationStatistics,
@@ -70,9 +71,8 @@ export class OrganisationsService {
   async getOrganisationStatistics(
     organisationId: UUID,
   ): Promise<OrganisationStatistics> {
-    const joinedRecords = await this.subscribersService.getSubscribersRecords(
-      organisationId,
-    );
+    const joinedRecords =
+      await this.subscribersService.getSubscribersRecords(organisationId);
     const clientsCount = joinedRecords.length;
 
     return new OrganisationStatistics(clientsCount, joinedRecords);
@@ -100,5 +100,12 @@ export class OrganisationsService {
       { avatarUrl: imageUrl },
     );
     return imageUrl;
+  }
+
+  async editOrganisationData(
+    organisationId: UUID,
+    data: EditOrganisationDTO,
+  ): Promise<void> {
+    await this.organisationsRepository.update({ organisationId }, { ...data });
   }
 }
