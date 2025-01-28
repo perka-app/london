@@ -16,7 +16,12 @@ import {
   ApiHeader,
   ApiOperation,
 } from '@nestjs/swagger';
-import { MessageStatus, SendMessageDTO } from './models/message.dto';
+import {
+  GetMesagesDTO,
+  MessageDTO,
+  MessageStatus,
+  SendMessageDTO,
+} from './models/message.dto';
 import { Message } from './models/message.entity';
 import { MessagesService } from './messages.service';
 import { SubscribersService } from 'src/subscribers/subscribers.service';
@@ -76,5 +81,33 @@ export class MessagesController {
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @ApiOperation({
+    summary: 'Get messages',
+    description: 'Get organisation latest messages in in range(start & end)',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Id will be taken from JWT token (no need to provide it)',
+  })
+  @ApiCreatedResponse({
+    description: 'Organisation lastest messages in provided range',
+    type: [MessageDTO],
+  })
+  @UseGuards(AuthGuard)
+  @Post('get')
+  async getMessages(
+    @Headers('id') organisationId: UUID,
+    @Body() getMessagesParams: GetMesagesDTO,
+  ): Promise<MessageDTO[]> {
+    const messages = await this.messageService.getMessages(
+      organisationId,
+      getMessagesParams,
+    );
+
+    return messages.map((message) => new MessageDTO(message));
   }
 }

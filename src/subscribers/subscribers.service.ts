@@ -13,10 +13,10 @@ export class SubscribersService {
   ) {}
 
   async addSubscriber(
-    subscriberDto: AddSubscriberDTO,
+    subscriberDTO: AddSubscriberDTO,
     organisationId: UUID,
   ): Promise<void> {
-    const subscriber = new Subscriber(subscriberDto.email, organisationId);
+    const subscriber = new Subscriber(subscriberDTO.email, organisationId);
     subscriber.encryptSensitiveData();
 
     await this.subscribersRepository.save(subscriber);

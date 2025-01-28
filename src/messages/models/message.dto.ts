@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Message } from './message.entity';
 
@@ -20,6 +20,62 @@ export class SendMessageDTO {
   @IsString()
   @IsNotEmpty()
   text: string;
+
+  constructor(message: Message) {
+    this.subject = message.subject;
+    this.text = message.text;
+  }
+}
+
+export enum Order {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+export class GetMesagesDTO {
+  @ApiProperty({
+    description: 'Order of the messages',
+    example: Order.ASC,
+    enum: Order,
+  })
+  @IsEnum(Order)
+  order: Order;
+
+  @ApiProperty({
+    description: 'Number of messages to skip',
+    type: Number,
+    example: 0,
+  })
+  @IsNumber()
+  start: number;
+
+  @ApiProperty({
+    description: 'Number of messages to take',
+    type: Number,
+    example: 10,
+  })
+  @IsNumber()
+  end: number;
+}
+
+export class MessageDTO {
+  @ApiProperty()
+  subject: string;
+
+  @ApiProperty()
+  text: string;
+
+  @ApiProperty()
+  sentAt: Date;
+
+  @ApiProperty()
+  reciversCount: number;
+
+  constructor(message: Message) {
+    this.subject = message.subject;
+    this.text = message.text;
+    this.sentAt = message.sentAt;
+    this.reciversCount = message.reciversCount;
+  }
 }
 
 export class MessageStatus {

@@ -10,6 +10,8 @@ import * as path from 'path';
 import { IMailgunClient } from 'mailgun.js/Interfaces';
 import { Message } from './models/message.entity';
 import { Subscriber } from 'src/subscribers/models/subscriber.entity';
+import { UUID } from 'crypto';
+import { GetMesagesDTO } from './models/message.dto';
 
 @Injectable()
 export class MessagesService {
@@ -52,6 +54,20 @@ export class MessagesService {
     await this.messagesRepository.save(message);
 
     return message;
+  }
+
+  async getMessages(
+    organisationId: UUID,
+    getMessagesParams: GetMesagesDTO,
+  ): Promise<Message[]> {
+    const { start, end, order } = getMessagesParams;
+
+    return await this.messagesRepository.find({
+      where: { organisationId },
+      order: { sentAt: order },
+      skip: start,
+      take: end,
+    });
   }
 
   private async sendEmail(
