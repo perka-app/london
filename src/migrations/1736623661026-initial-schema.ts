@@ -144,6 +144,27 @@ export class InitialSchema1736623661026 implements MigrationInterface {
         `INSERT INTO message ("messageId", "organisationId", "subject", "text", "sentAt", "reciversCount") VALUES ('${randomUUID()}', '${organisationId}', 'This is dummy title ${i}', 'This is dummy message ${i}', NOW(), 10)`,
       );
     }
+
+    // Insert 50 subscribers
+    const subscribers = [];
+    for (let i = 0; i < 100; i++) {
+      const subscriberId = randomUUID();
+      const email = `subscriber${i}@example.com`;
+      const confirmed = i < 90;
+      const joinedAt = new Date(
+        Date.now() - Math.floor(Math.random() * 60 * 24 * 60 * 60 * 1000),
+      ).toISOString();
+
+      subscribers.push(
+        `('${subscriberId}', '${organisationId}', '${email}', ${confirmed}, '${joinedAt}')`,
+      );
+    }
+
+    await queryRunner.query(
+      `INSERT INTO "subscriber" ("subscriberId", "organisationId", "email", "confirmed", "joinedAt") VALUES ${subscribers.join(
+        ', ',
+      )}`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
