@@ -31,6 +31,7 @@ import {
   ApiConsumes,
   ApiCreatedResponse,
   ApiHeader,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -128,6 +129,7 @@ export class OrganisationsController {
     example: 'dummy_org',
   })
   @ApiOkResponse({ type: OrganisationInfo })
+  @ApiNotFoundResponse({ description: 'Organisation not found' })
   @Get('/info/:nickname')
   async getInfo(
     @Param('nickname') nickname: string,

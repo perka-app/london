@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { randomUUID, UUID } from 'crypto';
-import { aesEncrypt } from 'src/common/aesHelper';
+import { aesDecrypt, aesEncrypt } from 'src/common/aesHelper';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
@@ -27,7 +27,7 @@ export class Subscriber {
   }
 
   public decryptSensitiveData(): void {
-    this.email = aesEncrypt(this.email);
+    this.email = aesDecrypt(this.email);
   }
 
   constructor(email: string, organisationId: UUID, confirmed: boolean = false) {

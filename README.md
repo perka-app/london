@@ -69,23 +69,29 @@ To run this service locally you need:
 ### 1. Create an `.env` file in the root of the project with the following content:
 
 ```env
-AWS_ACCESS_KEY_ID=access_key
-AWS_SECRET_ACCESS_KEY=secret_key
-
-S3_BUCKET_NAME=perka-api-bucket
-S3_REGION=eu-north-1
-
-AES_KEY=aes_key
-MAILGUN_API_KEY=mailgun_api_key
-
 ENVIRONMENT=dev
-PORT=3000
 
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
 DATABASE_USERNAME=root
 DATABASE_PASSWORD=password
 DATABASE_NAME=postgres_db
+
+UNSUBSCRIBE_URL=http://localhost:9000/unsubscribe
+
+MAILGUN_API_KEY=key
+MAILGUN_DOMAIN=domain
+
+JWT_SECRET=jwtSecret
+
+AES_KEY=key
+
+S3_BUCKET_NAME=perka-api-bucket
+S3_REGION=eu-north-1
+
+AWS_ACCESS_KEY_ID=key
+AWS_SECRET_ACCESS_KEY=accessKey
+
 ```
 
 ### 2. PostgresDB instance:

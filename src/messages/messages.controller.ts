@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -34,7 +35,7 @@ export class MessagesController {
   ) {}
 
   @ApiOperation({
-    summary: 'Sent message',
+    summary: 'Send message',
     description: 'Provided message will be sent to all organisation members',
   })
   @ApiBearerAuth()
@@ -68,6 +69,48 @@ export class MessagesController {
 
       const confirmedMessage = await this.messageService
         .sendMessage(message, recivers)
+        .catch((err) => {
+          throw new HttpException(
+            'Unable to send message: ' + err.message,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        });
+
+      return new MessageStatus(confirmedMessage);
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Send test message',
+    description: 'Message will be sent to provided email',
+  })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'id',
+    required: false,
+    description: 'Id will be taken from JWT token (no need to provide it)',
+  })
+  @ApiCreatedResponse({
+    description: 'Message sent successfully',
+    type: MessageStatus,
+  })
+  @UseGuards(AuthGuard)
+  @Post('/:email')
+  @HttpCode(HttpStatus.CREATED)
+  async sendTestMessage(
+    @Headers('id') organisationId: UUID,
+    @Param('email') email: string,
+    @Body() messageRequest: SendMessageDTO,
+  ): Promise<MessageStatus> {
+    try {
+      const message = new Message(messageRequest, organisationId);
+
+      const confirmedMessage = await this.messageService
+        .sendTestMessage(message, email)
         .catch((err) => {
           throw new HttpException(
             'Unable to send message: ' + err.message,

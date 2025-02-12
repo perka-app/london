@@ -18,6 +18,7 @@ export class MessagesService {
   private mailgunClient: IMailgunClient;
   private messageFooter: string;
   private fromAddress: string;
+  private unsubscribeUrl: string;
   private logger = new Logger('MessagesService');
 
   constructor(
@@ -26,6 +27,8 @@ export class MessagesService {
     private configService: ConfigService,
     private organisationsService: OrganisationsService,
   ) {
+    this.unsubscribeUrl =
+      this.configService.get<string>('UNSUBSCRIBE_URL') || '';
     const mailgun = new Mailgun(FormData);
     this.mailgunClient = mailgun.client({
       username: 'api',
@@ -56,6 +59,20 @@ export class MessagesService {
     return message;
   }
 
+  async sendTestMessage(
+    message: Message,
+    reciverEmail: string,
+  ): Promise<Message> {
+    const reciver = new Subscriber(reciverEmail, message.organisationId);
+    reciver.encryptSensitiveData();
+    await this.sendEmail(message, [reciver]);
+
+    message.sentAt = new Date();
+    message.reciversCount = 1;
+
+    return message;
+  }
+
   async getMessages(
     organisationId: UUID,
     getMessagesParams: GetMesagesDTO,
@@ -78,12 +95,19 @@ export class MessagesService {
       message.organisationId,
     );
 
-    const from = `${organisationName} <${this.fromAddress}>`;
+    const from = `${organisationName} via PERKA <${this.fromAddress}>`;
+    let messageText =
+      message.text +
+      this.messageFooter.replace('{{UNSUBSCRIBE_URL}}', this.unsubscribeUrl);
+
+    this.logger.log(
+      `Sending email for organisation "${recivers[0].organisationId}" with content: ${messageText}`,
+    );
 
     for (const reciver of recivers) {
       reciver.decryptSensitiveData();
-      const messageText =
-        message.text + this.messageFooter.replace('{{message}}', reciver.email);
+
+      messageText = messageText.replace('{{id}}', reciver.subscriberId);
 
       const messageData = {
         to: reciver.email,

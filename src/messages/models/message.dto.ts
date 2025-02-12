@@ -21,9 +21,11 @@ export class SendMessageDTO {
   @IsNotEmpty()
   text: string;
 
-  constructor(message: Message) {
-    this.subject = message.subject;
-    this.text = message.text;
+  constructor(message?: Message) {
+    if (message) {
+      this.subject = message.subject;
+      this.text = message.text;
+    }
   }
 }
 
