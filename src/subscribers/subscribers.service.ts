@@ -72,13 +72,14 @@ export class SubscribersService {
   async getSubscribersRecords(
     organisationId: UUID,
   ): Promise<SubscriberRecord[]> {
-    const query = `SELECT "joinedAt" FROM "subscriber" WHERE "organisationId" = '${organisationId}' and "confirmed" = true`;
+    const result = await this.subscribersRepository
+      .createQueryBuilder('subscriber')
+      .select('subscriber.joinedAt')
+      .where('subscriber.organisationId = :organisationId', { organisationId })
+      .andWhere('subscriber.confirmed = :confirmed', { confirmed: true })
+      .getRawMany();
 
-    const result = (await this.subscribersRepository.query(
-      query,
-    )) as SubscriberRecord[];
-
-    return result;
+    return result as SubscriberRecord[];
   }
 
   async getSubscribersForOrganisation(

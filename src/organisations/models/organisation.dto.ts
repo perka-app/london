@@ -104,17 +104,17 @@ export class OrganisationStatistics {
   @ApiProperty({
     description: 'Total number of clients in the organisation',
   })
-  clientsCount: number;
+  subscribersCount: number;
 
   @ApiProperty({
     description: 'Array of clients records',
     type: [SubscriberRecord],
   })
-  clientsRecords: SubscriberRecord[];
+  subscribersRecords: SubscriberRecord[];
 
   constructor(clientsCount: number, clientsRecords: SubscriberRecord[]) {
-    this.clientsCount = clientsCount;
-    this.clientsRecords = clientsRecords;
+    this.subscribersCount = clientsCount;
+    this.subscribersRecords = clientsRecords;
   }
 }
 

@@ -73,9 +73,9 @@ export class OrganisationsService {
   ): Promise<OrganisationStatistics> {
     const joinedRecords =
       await this.subscribersService.getSubscribersRecords(organisationId);
-    const clientsCount = joinedRecords.length;
+    const subscribersCount = joinedRecords.length;
 
-    return new OrganisationStatistics(clientsCount, joinedRecords);
+    return new OrganisationStatistics(subscribersCount, joinedRecords);
   }
 
   async getOrganisationInfo(nickname: string): Promise<OrganisationInfo> {

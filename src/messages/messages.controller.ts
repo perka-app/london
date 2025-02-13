@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Logger,
   Param,
   Post,
   UseGuards,
@@ -29,6 +30,7 @@ import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Controller('messages')
 export class MessagesController {
+  private logger = new Logger('MessagesController');
   constructor(
     private readonly messageService: MessagesService,
     private readonly subscribersServece: SubscribersService,
@@ -76,8 +78,11 @@ export class MessagesController {
           );
         });
 
+      this.logger.log('Message sent successfully');
       return new MessageStatus(confirmedMessage);
     } catch (err) {
+      this.logger.error(err);
+
       if (err instanceof HttpException) throw err;
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
