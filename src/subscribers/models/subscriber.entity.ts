@@ -43,3 +43,8 @@ export class SubscriberRecord {
   @ApiProperty()
   joinedAt: Date;
 }
+
+export type Subscription = {
+  subscriberId: UUID;
+  organisationId: UUID;
+};

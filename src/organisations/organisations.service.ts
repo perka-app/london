@@ -1,24 +1,18 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UUID } from 'crypto';
 import { Organisation } from './models/organisation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { S3Service } from 'src/s3/s3.service';
 import {
   EditOrganisationDTO,
   OrganisationDTO,
-  OrganisationInfo,
-  OrganisationStatistics,
 } from './models/organisation.dto';
-import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Injectable()
 export class OrganisationsService {
   constructor(
     @InjectRepository(Organisation)
     private readonly organisationsRepository: Repository<Organisation>,
-    private readonly subscribersService: SubscribersService,
-    private readonly S3Service: S3Service,
   ) {}
 
   async createOrganisation(organisation: Organisation): Promise<string> {
@@ -34,7 +28,7 @@ export class OrganisationsService {
     });
 
     if (!organisation) {
-      throw new HttpException(`Organisation '${nickname}' not found`, 404);
+      throw new NotFoundException(`Organisation '${nickname}' not found`);
     }
 
     return organisation;
@@ -48,16 +42,18 @@ export class OrganisationsService {
     return !!organisation;
   }
 
-  async getName(organisationId: UUID): Promise<string> {
+  async getOrganisationById(organisationId: UUID): Promise<Organisation> {
     const organisation = await this.organisationsRepository.findOneBy({
       organisationId: organisationId,
     });
 
     if (!organisation) {
-      throw new Error(`Organisation by id ${organisationId} not found`);
+      throw new NotFoundException(
+        `Organisation by id ${organisationId} not found`,
+      );
     }
 
-    return organisation.name;
+    return organisation;
   }
 
   async getOrganisationData(organisationId: UUID): Promise<OrganisationDTO> {
@@ -68,38 +64,12 @@ export class OrganisationsService {
     return new OrganisationDTO(organisation);
   }
 
-  async getOrganisationStatistics(
-    organisationId: UUID,
-  ): Promise<OrganisationStatistics> {
-    const joinedRecords =
-      await this.subscribersService.getSubscribersRecords(organisationId);
-    const subscribersCount = joinedRecords.length;
-
-    return new OrganisationStatistics(subscribersCount, joinedRecords);
-  }
-
-  async getOrganisationInfo(nickname: string): Promise<OrganisationInfo> {
-    const organisation = await this.getOrganisationByNickname(nickname);
-    const clientsCount = await this.subscribersService.getSubscribersCount(
-      organisation.organisationId,
-    );
-
-    return new OrganisationInfo(organisation, clientsCount);
-  }
-
   // Editing information
-  async uploadAvatar(
-    organisationId: UUID,
-    file: Express.Multer.File,
-  ): Promise<string> {
-    const key = `${file.fieldname}${Date.now()}`;
-    const imageUrl = await this.S3Service.uploadFile(file, key);
-
+  async uploadAvatar(organisationId: UUID, avatarUrl: string): Promise<void> {
     await this.organisationsRepository.update(
       { organisationId },
-      { avatarUrl: imageUrl },
+      { avatarUrl },
     );
-    return imageUrl;
   }
 
   async editOrganisationData(
