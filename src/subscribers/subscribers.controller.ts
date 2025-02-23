@@ -18,12 +18,17 @@ import {
 } from '@nestjs/swagger';
 import { SubscribersService } from './subscribers.service';
 import { AddSubscriberDTO } from './models/subscriber.dto';
+import { MessagesService } from 'src/messages/messages.service';
+import { AuthService } from 'src/auth/auth.service';
+import { Subscription } from './models/subscriber.entity';
 
 @Controller('subscribers')
 export class SubscribersController {
   constructor(
     private readonly organisationsService: OrganisationsService,
     private readonly subscribersService: SubscribersService,
+    private readonly messagesService: MessagesService,
+    private readonly authService: AuthService,
   ) {}
 
   @ApiOperation({
@@ -44,22 +49,34 @@ export class SubscribersController {
     const { email: subscriberEmail } = addSubscriberDTO;
 
     try {
-      const { organisationId } =
+      const organisation =
         await this.organisationsService.getOrganisationByNickname(
           organisationNickname,
         );
 
       const isSubscribed = await this.subscribersService.isSubscribed(
         subscriberEmail,
-        organisationId,
+        organisation.organisationId,
       );
       if (isSubscribed) {
         throw new HttpException('Already subscribed', 404);
       }
 
-      await this.subscribersService.addSubscriber(
+      const subscriber = await this.subscribersService.addSubscriber(
         addSubscriberDTO,
-        organisationId,
+        organisation.organisationId,
+      );
+
+      const tokenPayload: Subscription = {
+        subscriberId: subscriber.subscriberId,
+        organisationId: organisation.organisationId,
+      };
+      const personalToken = await this.authService.generateToken(tokenPayload);
+
+      await this.messagesService.sendConfirmationEmail(
+        organisation,
+        subscriber,
+        personalToken,
       );
     } catch (err) {
       if (err instanceof HttpException) throw err;

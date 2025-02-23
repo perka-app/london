@@ -4,29 +4,24 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { UUID } from 'crypto';
 import { Subscriber, SubscriberRecord } from './models/subscriber.entity';
 import { AddSubscriberDTO } from './models/subscriber.dto';
-import { MessagesService } from 'src/messages/messages.service';
 
 @Injectable()
 export class SubscribersService {
   constructor(
     @InjectRepository(Subscriber)
     private subscribersRepository: Repository<Subscriber>,
-    private readonly messagesService: MessagesService,
   ) {}
 
   async addSubscriber(
     subscriberDTO: AddSubscriberDTO,
     organisationId: UUID,
-  ): Promise<void> {
+  ): Promise<Subscriber> {
     const subscriber = new Subscriber(subscriberDTO.email, organisationId);
     subscriber.encryptSensitiveData();
 
     await this.subscribersRepository.save(subscriber);
 
-    await this.messagesService.sendConfirmationEmail(
-      organisationId,
-      subscriber,
-    );
+    return subscriber;
   }
 
   async removeSubscriber(

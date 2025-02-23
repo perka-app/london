@@ -27,6 +27,8 @@ import {
 import { Message } from './models/message.entity';
 import { MessagesService } from './messages.service';
 import { SubscribersService } from 'src/subscribers/subscribers.service';
+import { Subscriber } from 'src/subscribers/models/subscriber.entity';
+import { OrganisationsService } from 'src/organisations/organisations.service';
 
 @Controller('messages')
 export class MessagesController {
@@ -34,6 +36,7 @@ export class MessagesController {
   constructor(
     private readonly messageService: MessagesService,
     private readonly subscribersServece: SubscribersService,
+    private readonly organisationsService: OrganisationsService,
   ) {}
 
   @ApiOperation({
@@ -59,6 +62,8 @@ export class MessagesController {
   ): Promise<MessageStatus> {
     try {
       const message = new Message(messageRequest, organisationId);
+      const organisation =
+        await this.organisationsService.getOrganisationById(organisationId);
 
       const recivers = await this.subscribersServece
         .getSubscribersForOrganisation(organisationId)
@@ -70,7 +75,7 @@ export class MessagesController {
         });
 
       const confirmedMessage = await this.messageService
-        .sendMessage(message, recivers)
+        .sendMessage(organisation, message, recivers)
         .catch((err) => {
           throw new HttpException(
             'Unable to send message: ' + err.message,
@@ -113,9 +118,12 @@ export class MessagesController {
   ): Promise<MessageStatus> {
     try {
       const message = new Message(messageRequest, organisationId);
+      const reciver = new Subscriber(email, organisationId);
+      const organisation =
+        await this.organisationsService.getOrganisationById(organisationId);
 
       const confirmedMessage = await this.messageService
-        .sendTestMessage(message, email)
+        .sendMessage(organisation, message, [reciver], true)
         .catch((err) => {
           throw new HttpException(
             'Unable to send message: ' + err.message,

@@ -37,10 +37,16 @@ import {
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
+import { S3Service } from 'src/s3/s3.service';
+import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Controller('organisations')
 export class OrganisationsController {
-  constructor(private readonly organisationsService: OrganisationsService) {}
+  constructor(
+    private readonly organisationsService: OrganisationsService,
+    private readonly subscribersService: SubscribersService,
+    private readonly s3Service: S3Service,
+  ) {}
 
   @ApiOperation({
     summary: 'Create new organisation',
@@ -106,12 +112,10 @@ export class OrganisationsController {
     @Headers('id') organisationId: UUID,
   ): Promise<OrganisationStatistics> {
     try {
-      const statistics =
-        await this.organisationsService.getOrganisationStatistics(
-          organisationId,
-        );
+      const joinedRecords =
+        await this.subscribersService.getSubscribersRecords(organisationId);
 
-      return statistics;
+      return new OrganisationStatistics(joinedRecords.length, joinedRecords);
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
@@ -135,7 +139,13 @@ export class OrganisationsController {
     @Param('nickname') nickname: string,
   ): Promise<OrganisationInfo> {
     try {
-      return await this.organisationsService.getOrganisationInfo(nickname);
+      const organisation =
+        await this.organisationsService.getOrganisationByNickname(nickname);
+      const clientsCount = await this.subscribersService.getSubscribersCount(
+        organisation.organisationId,
+      );
+
+      return new OrganisationInfo(organisation, clientsCount);
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
@@ -206,10 +216,10 @@ export class OrganisationsController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ url: string }> {
     try {
-      const imageUrl = await this.organisationsService.uploadAvatar(
-        organisationId,
-        file,
-      );
+      const key = `${file.fieldname}${Date.now()}`;
+      const imageUrl = await this.s3Service.uploadFile(file, key);
+
+      await this.organisationsService.uploadAvatar(organisationId, imageUrl);
 
       return { url: imageUrl };
     } catch (err) {
