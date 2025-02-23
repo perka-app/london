@@ -9,26 +9,41 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { IMailgunClient } from 'mailgun.js/Interfaces';
 import { Message } from './models/message.entity';
-import { Subscriber } from 'src/subscribers/models/subscriber.entity';
+import {
+  Subscriber,
+  // Subscription,
+} from 'src/subscribers/models/subscriber.entity';
 import { UUID } from 'crypto';
 import { GetMesagesDTO } from './models/message.dto';
+// import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class MessagesService {
   private mailgunClient: IMailgunClient;
   private messageFooter: string;
+
   private fromAddress: string;
   private unsubscribeUrl: string;
+  // private confirmEmailUrl: string;
+  // private confirmEmail: {
+  //   subject: string;
+  //   html: string;
+  // };
+
   private logger = new Logger('MessagesService');
 
   constructor(
     @InjectRepository(Message)
     private messagesRepository: Repository<Message>,
+
     private configService: ConfigService,
     private organisationsService: OrganisationsService,
+    // private authService: AuthService,
   ) {
     this.unsubscribeUrl =
       this.configService.get<string>('UNSUBSCRIBE_URL') || '';
+    // this.confirmEmailUrl =
+    //   this.configService.get<string>('CONFIRM_EMAIL_URL') || '';
     const mailgun = new Mailgun(FormData);
     this.mailgunClient = mailgun.client({
       username: 'api',
@@ -44,6 +59,7 @@ export class MessagesService {
     const textTemplates = JSON.parse(textTemplatesContent);
     this.messageFooter = textTemplates.footer;
     this.fromAddress = textTemplates.from;
+    // this.confirmEmail = textTemplates.confirmEmail;
   }
 
   async sendMessage(
@@ -71,6 +87,31 @@ export class MessagesService {
     message.reciversCount = 1;
 
     return message;
+  }
+
+  async sendConfirmationEmail(
+    organisationId: UUID,
+    subscriber: Subscriber,
+  ): Promise<void> {
+    //   const tokenData: Subscription = {
+    //     subscriberId: subscriber.subscriberId,
+    //     organisationId,
+    //   };
+    //   const token = await this.authService.generateToken(tokenData);
+    //   const message = new Message(
+    //     {
+    //       subject: this.confirmEmail.subject,
+    //       text: this.confirmEmail.html.replace(
+    //         '{{organisationName}}',
+    //         (await this.organisationsService.getName(organisationId))
+    //           .replace('{{CONFIRM_EMAIL_URL}}', this.confirmEmailUrl)
+    //           .replace('{{token}}', token),
+    //       ),
+    //     },
+    //     organisationId,
+    //   );
+    //   await this.sendEmail(message, [subscriber]);
+    console.log(organisationId + subscriber);
   }
 
   async getMessages(

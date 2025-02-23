@@ -9,7 +9,6 @@ import { SubscribersModule } from 'src/subscribers/subscribers.module';
 
 @Module({
   imports: [
-    OrganisationsModule,
     forwardRef(() => SubscribersModule),
     forwardRef(() => S3Module),
     TypeOrmModule.forFeature([Organisation]),

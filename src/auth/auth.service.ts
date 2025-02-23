@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { OrganisationsService } from 'src/organisations/organisations.service';
 import { JwtPayload } from './models/jwtPayload';
@@ -6,6 +6,8 @@ import { comparePassword } from 'src/common/bcryptHelper';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger('AuthService');
+
   constructor(
     private organisationsService: OrganisationsService,
     private jwtService: JwtService,
@@ -30,5 +32,18 @@ export class AuthService {
     };
 
     return await this.jwtService.signAsync(payload);
+  }
+
+  async generateToken<T extends object | Buffer>(payload: T): Promise<string> {
+    return await this.jwtService.signAsync(payload);
+  }
+
+  async decodeToken<T>(token: string): Promise<T> {
+    try {
+      return (await this.jwtService.verifyAsync(token)) as T;
+    } catch (error) {
+      this.logger.error('Unable to decode token:', error.message);
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }
