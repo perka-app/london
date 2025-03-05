@@ -61,29 +61,14 @@ export class MessagesService {
     recivers: Subscriber[],
     test: boolean = false,
   ): Promise<Message> {
+    test && recivers[0].encryptSensitiveData();
+
     await this.sendEmail(organisation, message, recivers);
 
     message.sentAt = new Date();
     message.reciversCount = recivers.length;
 
-    if (test) {
-      await this.messagesRepository.save(message);
-    }
-
-    return message;
-  }
-
-  async sendTestMessage(
-    organisation: Organisation,
-    message: Message,
-    reciverEmail: string,
-  ): Promise<Message> {
-    const reciver = new Subscriber(reciverEmail, message.organisationId);
-    reciver.encryptSensitiveData();
-    await this.sendEmail(organisation, message, [reciver]);
-
-    message.sentAt = new Date();
-    message.reciversCount = 1;
+    !test && (await this.messagesRepository.save(message));
 
     return message;
   }

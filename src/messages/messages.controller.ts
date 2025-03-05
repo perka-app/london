@@ -6,7 +6,6 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -19,7 +18,6 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import {
-  GetMesagesDTO,
   MessageDTO,
   MessageStatus,
   SendMessageDTO,
@@ -109,11 +107,11 @@ export class MessagesController {
     type: MessageStatus,
   })
   @UseGuards(AuthGuard)
-  @Post('/:email')
+  @Post('/test')
   @HttpCode(HttpStatus.CREATED)
   async sendTestMessage(
     @Headers('id') organisationId: UUID,
-    @Param('email') email: string,
+    @Headers('email') email: string,
     @Body() messageRequest: SendMessageDTO,
   ): Promise<MessageStatus> {
     try {
@@ -157,7 +155,7 @@ export class MessagesController {
   @Post('get')
   async getMessages(
     @Headers('id') organisationId: UUID,
-    @Body() getMessagesParams: GetMesagesDTO,
+    @Body() getMessagesParams: any,
   ): Promise<MessageDTO[]> {
     const messages = await this.messageService.getMessages(
       organisationId,
