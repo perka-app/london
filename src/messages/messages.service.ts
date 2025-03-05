@@ -81,15 +81,14 @@ export class MessagesService {
     const message = new Message(
       {
         subject: this.confirmEmail.subject,
-        text: this.confirmEmail.html.replace(
-          '{{organisationName}}',
-          organisation.name
-            .replace('{{CONFIRM_EMAIL_URL}}', this.confirmEmailUrl)
-            .replace('{{token}}', token),
-        ),
+        text: this.confirmEmail.html
+          .replace('{{organisationName}}', organisation.name)
+          .replace('{{CONFIRM_EMAIL_URL}}', this.confirmEmailUrl)
+          .replace('{{token}}', token),
       },
       organisation.organisationId,
     );
+    console.log(message);
     await this.sendEmail(organisation, message, [subscriber]);
   }
 

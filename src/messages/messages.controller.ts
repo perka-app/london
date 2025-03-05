@@ -18,6 +18,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import {
+  GetMesagesDTO,
   MessageDTO,
   MessageStatus,
   SendMessageDTO,
@@ -155,7 +156,7 @@ export class MessagesController {
   @Post('get')
   async getMessages(
     @Headers('id') organisationId: UUID,
-    @Body() getMessagesParams: any,
+    @Body() getMessagesParams: GetMesagesDTO,
   ): Promise<MessageDTO[]> {
     const messages = await this.messageService.getMessages(
       organisationId,

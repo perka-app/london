@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpException,
   HttpStatus,
   Param,
   Post,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { OrganisationsService } from 'src/organisations/organisations.service';
 import {
@@ -40,10 +42,9 @@ export class SubscribersController {
     example: 'dummy_org',
   })
   @ApiCreatedResponse({ description: 'Subscriber added but not verified' })
-  @Post('/:organisationNickname')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   async createMembership(
-    @Param('organisationNickname') organisationNickname: string,
     @Body() addSubscriberDTO: AddSubscriberDTO,
   ): Promise<void> {
     const { email: subscriberEmail } = addSubscriberDTO;
@@ -51,8 +52,9 @@ export class SubscribersController {
     try {
       const organisation =
         await this.organisationsService.getOrganisationByNickname(
-          organisationNickname,
+          addSubscriberDTO.organisationNickname,
         );
+      console.log('org: ' + organisation.organisationId);
 
       const isSubscribed = await this.subscribersService.isSubscribed(
         subscriberEmail,
@@ -73,11 +75,12 @@ export class SubscribersController {
       };
       const personalToken = await this.authService.generateToken(tokenPayload);
 
-      await this.messagesService.sendConfirmationEmail(
-        organisation,
-        subscriber,
-        personalToken,
-      );
+      addSubscriberDTO.email &&
+        (await this.messagesService.sendConfirmationEmail(
+          organisation,
+          subscriber,
+          personalToken,
+        ));
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
@@ -95,14 +98,23 @@ export class SubscribersController {
     example: 'jnn26bkkz8n111ji2hdkaA11u9',
   })
   @ApiOkResponse({ description: 'Subscriber was confirmed' })
-  @Post('confirm/:organisationNickname')
+  @Get('confirm-email/:activation_key')
   @HttpCode(HttpStatus.OK)
   async confirmMembership(
     @Param('activation_key') activation_key: string,
-  ): Promise<void> {
+  ): Promise<string> {
     try {
-      console.log(activation_key);
-      // do something
+      const { subscriberId, organisationId } = await this.authService
+        .decodeToken<Subscription>(activation_key)
+        .catch(() => {
+          throw new UnauthorizedException('Invalid activation key');
+        });
+
+      await this.subscribersService.confirmSubscriber(
+        subscriberId,
+        organisationId,
+      );
+      return 'Subscriber confirmed';
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
@@ -114,10 +126,9 @@ export class SubscribersController {
     summary: 'Remove subscriber from organisation',
   })
   @ApiNoContentResponse({ description: 'Subscriber removed successfully' })
-  @Delete('/:organisationNickname')
+  @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async endMembership(
-    @Param('organisationNickname') organisationNickname: string,
     @Body() addSubscriberDTO: AddSubscriberDTO,
   ): Promise<void> {
     const { email: subscriberEmail } = addSubscriberDTO;
@@ -125,7 +136,7 @@ export class SubscribersController {
     try {
       const { organisationId } =
         await this.organisationsService.getOrganisationByNickname(
-          organisationNickname,
+          addSubscriberDTO.organisationNickname,
         );
 
       const subscriber = await this.subscribersService.getSubscriberByEmail(
