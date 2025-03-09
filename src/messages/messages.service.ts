@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OrganisationsService } from 'src/organisations/organisations.service';
 import * as FormData from 'form-data';
 import Mailgun, { MailgunMessageData } from 'mailgun.js';
 import * as fs from 'fs';
@@ -12,23 +11,32 @@ import { Message } from './models/message.entity';
 import { Subscriber } from 'src/subscribers/models/subscriber.entity';
 import { UUID } from 'crypto';
 import { GetMesagesDTO } from './models/message.dto';
+import { Organisation } from 'src/organisations/models/organisation.entity';
 
 @Injectable()
 export class MessagesService {
   private mailgunClient: IMailgunClient;
   private messageFooter: string;
+
   private fromAddress: string;
   private unsubscribeUrl: string;
+  private confirmEmailUrl: string;
+  private confirmEmail: {
+    subject: string;
+    html: string;
+  };
+
   private logger = new Logger('MessagesService');
 
   constructor(
     @InjectRepository(Message)
     private messagesRepository: Repository<Message>,
     private configService: ConfigService,
-    private organisationsService: OrganisationsService,
   ) {
     this.unsubscribeUrl =
       this.configService.get<string>('UNSUBSCRIBE_URL') || '';
+    this.confirmEmailUrl =
+      this.configService.get<string>('CONFIRM_EMAIL_URL') || '';
     const mailgun = new Mailgun(FormData);
     this.mailgunClient = mailgun.client({
       username: 'api',
@@ -44,33 +52,44 @@ export class MessagesService {
     const textTemplates = JSON.parse(textTemplatesContent);
     this.messageFooter = textTemplates.footer;
     this.fromAddress = textTemplates.from;
+    this.confirmEmail = textTemplates.confirmEmail;
   }
 
   async sendMessage(
+    organisation: Organisation,
     message: Message,
     recivers: Subscriber[],
+    test: boolean = false,
   ): Promise<Message> {
-    await this.sendEmail(message, recivers);
+    test && recivers[0].encryptSensitiveData();
+
+    await this.sendEmail(organisation, message, recivers);
 
     message.sentAt = new Date();
     message.reciversCount = recivers.length;
-    await this.messagesRepository.save(message);
+
+    !test && (await this.messagesRepository.save(message));
 
     return message;
   }
 
-  async sendTestMessage(
-    message: Message,
-    reciverEmail: string,
-  ): Promise<Message> {
-    const reciver = new Subscriber(reciverEmail, message.organisationId);
-    reciver.encryptSensitiveData();
-    await this.sendEmail(message, [reciver]);
-
-    message.sentAt = new Date();
-    message.reciversCount = 1;
-
-    return message;
+  async sendConfirmationEmail(
+    organisation: Organisation,
+    subscriber: Subscriber,
+    token: string,
+  ): Promise<void> {
+    const message = new Message(
+      {
+        subject: this.confirmEmail.subject,
+        text: this.confirmEmail.html
+          .replace('{{organisationName}}', organisation.name)
+          .replace('{{CONFIRM_EMAIL_URL}}', this.confirmEmailUrl)
+          .replace('{{token}}', token),
+      },
+      organisation.organisationId,
+    );
+    console.log(message);
+    await this.sendEmail(organisation, message, [subscriber]);
   }
 
   async getMessages(
@@ -88,14 +107,11 @@ export class MessagesService {
   }
 
   private async sendEmail(
+    organisation: Organisation,
     message: Message,
     recivers: Subscriber[],
   ): Promise<void> {
-    const organisationName = await this.organisationsService.getName(
-      message.organisationId,
-    );
-
-    const from = `${organisationName} via PERKA <${this.fromAddress}>`;
+    const from = `${organisation.name} via PERKA <${this.fromAddress}>`;
     let messageText =
       message.text +
       this.messageFooter.replace('{{UNSUBSCRIBE_URL}}', this.unsubscribeUrl);

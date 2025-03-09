@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 export class AddSubscriberDTO {
   @ApiProperty({
@@ -9,4 +9,12 @@ export class AddSubscriberDTO {
   })
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'Nickname of the organisation',
+    type: String,
+    example: 'dummy_org',
+  })
+  @IsString()
+  organisationNickname: string;
 }

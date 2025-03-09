@@ -4,6 +4,7 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { UUID } from 'crypto';
 import { Subscriber, SubscriberRecord } from './models/subscriber.entity';
 import { AddSubscriberDTO } from './models/subscriber.dto';
+import { aesEncrypt } from 'src/common/aesHelper';
 
 @Injectable()
 export class SubscribersService {
@@ -15,11 +16,13 @@ export class SubscribersService {
   async addSubscriber(
     subscriberDTO: AddSubscriberDTO,
     organisationId: UUID,
-  ): Promise<void> {
+  ): Promise<Subscriber> {
     const subscriber = new Subscriber(subscriberDTO.email, organisationId);
     subscriber.encryptSensitiveData();
 
     await this.subscribersRepository.save(subscriber);
+
+    return subscriber;
   }
 
   async removeSubscriber(
@@ -34,10 +37,28 @@ export class SubscribersService {
     await this.subscribersRepository.delete(where);
   }
 
+  async confirmSubscriber(
+    subscriberId: UUID,
+    organisationId: UUID,
+  ): Promise<void> {
+    const where: FindOptionsWhere<Subscriber> = {
+      subscriberId,
+      organisationId,
+    };
+
+    const subscriber = await this.subscribersRepository.findOneBy(where);
+    if (!subscriber) {
+      throw new HttpException('Subscriber not found', 404);
+    }
+
+    subscriber.confirmed = true;
+    await this.subscribersRepository.save(subscriber);
+  }
+
   // Information exposing
   async isSubscribed(email: string, organisationId: UUID): Promise<boolean> {
     const where: FindOptionsWhere<Subscriber> = {
-      email,
+      email: aesEncrypt(email),
       organisationId,
     };
 
@@ -49,7 +70,7 @@ export class SubscribersService {
     organisationId: UUID,
   ): Promise<Subscriber> {
     const where: FindOptionsWhere<Subscriber> = {
-      email,
+      email: aesEncrypt(email),
       organisationId,
     };
 
