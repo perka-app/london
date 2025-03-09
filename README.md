@@ -77,7 +77,8 @@ DATABASE_USERNAME=root
 DATABASE_PASSWORD=password
 DATABASE_NAME=postgres_db
 
-UNSUBSCRIBE_URL=http://localhost:9000/unsubscribe
+UNSUBSCRIBE_URL=http://localhost:3000/subscribers/confirm-email
+CONFIRM_EMAIL_URL=http://localhost:3000/subscribers/confirm-email
 
 MAILGUN_API_KEY=key
 MAILGUN_DOMAIN=domain
