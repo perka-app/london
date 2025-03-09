@@ -2,11 +2,11 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -98,11 +98,11 @@ export class SubscribersController {
     example: 'jnn26bkkz8n111ji2hdkaA11u9',
   })
   @ApiOkResponse({ description: 'Subscriber was confirmed' })
-  @Get('confirm-email/:activation_key')
+  @Patch('confirm-email/:activation_key')
   @HttpCode(HttpStatus.OK)
   async confirmMembership(
     @Param('activation_key') activation_key: string,
-  ): Promise<string> {
+  ): Promise<void> {
     try {
       const { subscriberId, organisationId } = await this.authService
         .decodeToken<Subscription>(activation_key)
@@ -114,7 +114,6 @@ export class SubscribersController {
         subscriberId,
         organisationId,
       );
-      return 'Subscriber confirmed';
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
