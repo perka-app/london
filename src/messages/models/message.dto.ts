@@ -70,13 +70,13 @@ export class MessageDTO {
   sentAt: Date;
 
   @ApiProperty()
-  reciversCount: number;
+  receiversCount: number;
 
   constructor(message: Message) {
     this.subject = message.subject;
     this.text = message.text;
     this.sentAt = message.sentAt;
-    this.reciversCount = message.reciversCount;
+    this.receiversCount = message.receiversCount;
   }
 }
 
@@ -93,10 +93,10 @@ export class MessageStatus {
     type: Number,
     example: 10,
   })
-  reciversCount: number;
+  receiversCount: number;
 
   constructor(message: Message) {
     this.sentAt = message.sentAt;
-    this.reciversCount = message.reciversCount;
+    this.receiversCount = message.receiversCount;
   }
 }

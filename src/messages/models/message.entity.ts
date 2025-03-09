@@ -26,7 +26,7 @@ export class Message {
 
   @Column()
   @IsNotEmpty()
-  reciversCount: number;
+  receiversCount: number;
 
   constructor(messageDTO?: SendMessageDTO, organisationId?: UUID) {
     if (messageDTO && organisationId) {

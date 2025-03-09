@@ -152,6 +152,7 @@ export class MessagesController {
     description: 'Organisation lastest messages in provided range',
     type: [MessageDTO],
   })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @Post('get')
   async getMessages(

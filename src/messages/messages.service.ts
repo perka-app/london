@@ -66,7 +66,7 @@ export class MessagesService {
     await this.sendEmail(organisation, message, recivers);
 
     message.sentAt = new Date();
-    message.reciversCount = recivers.length;
+    message.receiversCount = recivers.length;
 
     !test && (await this.messagesRepository.save(message));
 
